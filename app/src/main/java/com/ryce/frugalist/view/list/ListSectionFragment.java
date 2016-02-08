@@ -1,0 +1,130 @@
+package com.ryce.frugalist.view.list;
+
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.ryce.frugalist.R;
+import com.ryce.frugalist.model.AbstractListing;
+import com.ryce.frugalist.model.Deal;
+import com.ryce.frugalist.util.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by Tony on 2016-02-06.
+ *
+ * Fragment containing a list section
+ */
+public class ListSectionFragment extends Fragment {
+
+    /**
+     * Enum of listing types
+     */
+    public enum ListingType {
+        NONE(-1), DEAL(0), FREEBIE(1);
+        int val;
+        ListingType(int val) { this.val = val; }
+        public int toInteger() { return val; }
+    }
+
+    /**
+     * Enum of section types
+     */
+    public enum ListSections {
+        NEARBY(0), HOTTEST(1), FREEBIE(2);
+        int val;
+        ListSections(int val) { this.val = val; }
+        public int toInteger() { return val; }
+    }
+
+    /**
+     * The fragment argument representing the section number for this
+     * fragment.
+     */
+    public static final String ARG_SECTION_NUMBER = "section_number";
+
+
+    public ListSectionFragment() {
+    }
+
+    /**
+     * Returns a new instance of this fragment for the given section
+     * number.
+     */
+    public static ListSectionFragment newInstance(int sectionNumber) {
+        ListSectionFragment fragment = new ListSectionFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static List<AbstractListing> items = new ArrayList<AbstractListing>();
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_main_list, container, false);
+        //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+        //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.mainListView);
+        recyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        // make this a class level var
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+
+        if (items.isEmpty()) {
+            // TEST DATA
+            // TODO: should move data to model module somehow so all activities can access
+            Bitmap image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_peach, 80, 80);
+            Deal deal = new Deal(image, "2.99", "Peachy", 5, "lb", "Zehr's");
+            items.add(deal);
+
+            image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_apple, 80, 80);
+            deal = new Deal(image, "0.99", "Apple", 7, "lb", "ValuMart");
+            items.add(deal);
+
+            image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_cheese, 80, 80);
+            deal = new Deal(image, "3.99", "Cheese", 9, "lb", "Sobey's");
+            items.add(deal);
+
+            image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_apple, 80, 80);
+            deal = new Deal(image, "0.89", "Apples", 1, "lb", "Zehr's");
+            items.add(deal);
+
+            image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_apple, 80, 80);
+            deal = new Deal(image, "1.99", "Appless", -6, "lb", "Metro");
+            items.add(deal);
+
+            image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_cheese, 80, 80);
+            deal = new Deal(image, "6.99", "Cheese", -5, "lb", "Sobey's");
+            items.add(deal);
+
+            image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_cheese, 80, 80);
+            deal = new Deal(image, "6.99", "Cheese", -1, "lb", "Sobey's");
+            items.add(deal);
+
+            image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_cheese, 80, 80);
+            deal = new Deal(image, "6.99", "Cheese", -1, "lb", "Sobey's");
+            items.add(deal);
+        }
+
+        recyclerView.setAdapter(new ListSectionRecyclerAdapter(items, ListingType.DEAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null, false, true));
+
+        return rootView;
+    }
+
+
+
+}
