@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/FrugaList.iml" filepath="$PROJECT_DIR$/FrugaList.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/frugalist-client.iml" filepath="$PROJECT_DIR$/frugalist-client.iml" />
     </modules>
   </component>
 </project>

@@ -15,8 +15,8 @@ public class Deal extends AbstractListing {
     private String store;
     private Integer rating;
 
-    public Deal(Bitmap image, String price, String product, Integer rating, String unit, String store) {
-        super(image, product);
+    public Deal(Bitmap image, String imageUrl, String price, String product, Integer rating, String unit, String store) {
+        super(image, imageUrl, product);
         this.price = price;
         this.rating = rating;
         this.unit = unit;

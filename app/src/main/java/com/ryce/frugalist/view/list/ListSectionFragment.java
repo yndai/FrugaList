@@ -12,10 +12,14 @@ import android.view.ViewGroup;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.Deal;
+import com.ryce.frugalist.util.DownloadImageTask;
 import com.ryce.frugalist.util.Utils;
+import com.ryce.frugalist.view.detail.ListingDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.ryce.frugalist.view.detail.ListingDetailActivity.*;
 
 /**
  * Created by Tony on 2016-02-06.
@@ -83,39 +87,43 @@ public class ListSectionFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
+        String test_apple = "http://imgur.com/2dozFb1.jpg";
+        String test_cheese = "http://imgur.com/G0f4Lbb.jpg";
+        String test_peach = "http://imgur.com/M5b16xH.jpg";
+
         if (items.isEmpty()) {
             // TEST DATA
             // TODO: should move data to model module somehow so all activities can access
             Bitmap image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_peach, 80, 80);
-            Deal deal = new Deal(image, "2.99", "Peachy", 5, "lb", "Zehr's");
+            Deal deal = new Deal(image, test_peach, "2.99", "Peachy", 5, "lb", "Zehr's");
             items.add(deal);
 
             image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_apple, 80, 80);
-            deal = new Deal(image, "0.99", "Apple", 7, "lb", "ValuMart");
+            deal = new Deal(image, test_apple, "0.99", "Apple", 7, "lb", "ValuMart");
             items.add(deal);
 
             image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_cheese, 80, 80);
-            deal = new Deal(image, "3.99", "Cheese", 9, "lb", "Sobey's");
+            deal = new Deal(image, test_cheese, "3.99", "Cheese", 9, "lb", "Sobey's");
             items.add(deal);
 
             image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_apple, 80, 80);
-            deal = new Deal(image, "0.89", "Apples", 1, "lb", "Zehr's");
+            deal = new Deal(image, test_apple, "0.89", "Apples", 1, "lb", "Zehr's");
             items.add(deal);
 
             image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_apple, 80, 80);
-            deal = new Deal(image, "1.99", "Appless", -6, "lb", "Metro");
+            deal = new Deal(image, test_apple, "1.99", "Appless", -6, "lb", "Metro");
             items.add(deal);
 
             image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_cheese, 80, 80);
-            deal = new Deal(image, "6.99", "Cheese", -5, "lb", "Sobey's");
+            deal = new Deal(image, test_cheese, "6.99", "Cheese", -5, "lb", "Sobey's");
             items.add(deal);
 
             image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_cheese, 80, 80);
-            deal = new Deal(image, "6.99", "Cheese", -1, "lb", "Sobey's");
+            deal = new Deal(image, test_cheese, "6.99", "Cheese", -1, "lb", "Sobey's");
             items.add(deal);
 
             image = Utils.decodeSampledBitmapFromResource(getResources(), R.drawable.test_cheese, 80, 80);
-            deal = new Deal(image, "6.99", "Cheese", -1, "lb", "Sobey's");
+            deal = new Deal(image, test_cheese, "6.99", "Cheese", -1, "lb", "Sobey's");
             items.add(deal);
         }
 

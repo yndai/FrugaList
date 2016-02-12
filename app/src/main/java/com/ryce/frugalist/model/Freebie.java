@@ -7,7 +7,7 @@ import android.graphics.Bitmap;
  */
 public class Freebie extends AbstractListing {
 
-    public Freebie(Bitmap image, String product) {
-        super(image, product);
+    public Freebie(Bitmap image, String imageUrl, String product) {
+        super(image, imageUrl, product);
     }
 }
