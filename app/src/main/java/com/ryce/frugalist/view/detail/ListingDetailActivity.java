@@ -1,8 +1,6 @@
 package com.ryce.frugalist.view.detail;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,11 +13,9 @@ import android.widget.TextView;
 
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.Deal;
-import com.ryce.frugalist.util.DownloadImageTask;
+import com.ryce.frugalist.service.ListingFetchImageTask;
 import com.ryce.frugalist.view.list.ListSectionFragment;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
-
-import java.io.InputStream;
 
 public class ListingDetailActivity extends AppCompatActivity {
 
@@ -35,14 +31,31 @@ public class ListingDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         TextView text = (TextView) findViewById(R.id.detailText);
-        ImageView imageView = (ImageView) findViewById(R.id.detailImage);
+        final ImageView imageView = (ImageView) findViewById(R.id.detailImage);
 
         ListingType type = (ListingType) getIntent().getExtras().get(ARG_LISTING_TYPE);
 
         if (type == ListingType.DEAL) {
             int pos = (int) getIntent().getExtras().get(ARG_LISTING_DATA);
-            Deal deal = (Deal) ListSectionFragment.items.get(pos);
-            new DownloadImageTask(imageView).execute(deal.getImageUrl());
+            final Deal deal = (Deal) ListSectionFragment.items.get(pos);
+            if (deal.getImage() == null) {
+
+                new ListingFetchImageTask() {
+                    @Override
+                    protected void onPostExecute(Bitmap result) {
+                        if (result != null) {
+                            // cache image in model
+                            deal.setImage(result,
+                                    ListSectionFragment.THUMBNAIL_WIDTH,
+                                    ListSectionFragment.THUMBNAIL_HEIGHT);
+                            imageView.setImageBitmap(deal.getImage());
+                        }
+                    }
+                }.execute(deal.getImageUrl());
+
+            } else{
+                imageView.setImageBitmap(deal.getImage());
+            }
             Log.i("deal", deal.toString());
             //image.setImageBitmap(deal.getImage());
         }

@@ -2,6 +2,7 @@ package com.ryce.frugalist.view.list;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.Deal;
+import com.ryce.frugalist.service.ListingFetchImageTask;
 import com.ryce.frugalist.view.detail.ListingDetailActivity;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
 
@@ -72,8 +74,24 @@ public class ListSectionRecyclerAdapter
             dealHolder.mStoreTextView.setText(deal.getStore());
             dealHolder.mRatingTextView.setText(deal.getFormattedRating());
             dealHolder.mRatingTextView.setTextColor(deal.getRatingColour());
-            // TODO: hard coded dims...
-            dealHolder.mImageView.setImageBitmap(deal.getThumbnail(80, 80));
+
+            if (deal.getImage() == null) {
+
+                new ListingFetchImageTask() {
+                    @Override
+                    protected void onPostExecute(Bitmap result) {
+                        if (result != null) {
+                            deal.setImage(result,
+                                    ListSectionFragment.THUMBNAIL_WIDTH,
+                                    ListSectionFragment.THUMBNAIL_HEIGHT);
+                            dealHolder.mImageView.setImageBitmap(deal.getThumbnail());
+                        }
+                    }
+                }.execute(deal.getImageUrl());
+
+            } else {
+                dealHolder.mImageView.setImageBitmap(deal.getThumbnail());
+            }
 
             dealHolder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override

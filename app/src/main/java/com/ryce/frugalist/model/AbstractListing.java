@@ -22,6 +22,12 @@ public abstract class AbstractListing {
         this.product = product;
     }
 
+    public void setImage(Bitmap image, int width, int height) {
+        this.image = image;
+        // cache a thumbnail
+        scaledImage = Bitmap.createScaledBitmap(image, width, height, false);
+    }
+
     public Bitmap getImage() {
         return image;
     }
@@ -36,9 +42,7 @@ public abstract class AbstractListing {
 
     // convenience methods
 
-    public Bitmap getThumbnail(int height, int width) {
-        if (scaledImage == null)
-            scaledImage = Bitmap.createScaledBitmap(image, width, height, false);
+    public Bitmap getThumbnail() {
         return scaledImage;
     }
 
