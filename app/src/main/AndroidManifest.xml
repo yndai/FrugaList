@@ -29,6 +29,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ryce.frugalist.view.list.MainListActivity" />
         </activity>
+        <activity
+            android:name=".view.list.PostingActivity"
+            android:label="@string/title_activity_display_message"
+            android:parentActivityName=".view.list.MainListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ryce.frugalist.view.list.MainListActivity" />
+        </activity>
     </application>
 
 </manifest>
