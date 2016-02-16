@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.Deal;
-import com.ryce.frugalist.service.ListingFetchImageTask;
+import com.ryce.frugalist.service.FetchImageTask;
 import com.ryce.frugalist.view.list.ListSectionFragment;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
 
@@ -40,7 +40,7 @@ public class ListingDetailActivity extends AppCompatActivity {
             final Deal deal = (Deal) ListSectionFragment.items.get(pos);
             if (deal.getImage() == null) {
 
-                new ListingFetchImageTask() {
+                new FetchImageTask() {
                     @Override
                     protected void onPostExecute(Bitmap result) {
                         if (result != null) {

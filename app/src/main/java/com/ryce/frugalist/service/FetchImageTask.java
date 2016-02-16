@@ -10,9 +10,17 @@ import java.io.InputStream;
 /**
  * Created by Roger_Wang on 2016-02-12.
  */
-public class ListingFetchImageTask extends AsyncTask<String, Void, Bitmap> {
+public class FetchImageTask extends AsyncTask<String, Void, Bitmap> {
 
-    public ListingFetchImageTask() {
+    public FetchImageTask() {
+    }
+
+    /**
+     * TODO: show spinner, etc
+     */
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
     }
 
     @Override

@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.Deal;
-import com.ryce.frugalist.service.ListingFetchImageTask;
+import com.ryce.frugalist.service.FetchImageTask;
 import com.ryce.frugalist.view.detail.ListingDetailActivity;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
 
@@ -77,7 +77,7 @@ public class ListSectionRecyclerAdapter
 
             if (deal.getImage() == null) {
 
-                new ListingFetchImageTask() {
+                new FetchImageTask() {
                     @Override
                     protected void onPostExecute(Bitmap result) {
                         if (result != null) {
