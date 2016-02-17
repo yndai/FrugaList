@@ -91,28 +91,28 @@ public class ListSectionFragment extends Fragment {
         if (items.isEmpty()) {
             // TEST DATA
             // TODO: should move data to model module somehow so all activities can access
-            Deal deal = new Deal(null, test_peach, "2.99", "Peachy", 5, "lb", "Zehr's");
+            Deal deal = new Deal(test_peach, "2.99", "Peachy", 5, "lb", "Zehr's");
             items.add(deal);
 
-            deal = new Deal(null, test_apple, "0.99", "Apple", 7, "lb", "ValuMart");
+            deal = new Deal(test_apple, "0.99", "Apple", 7, "lb", "ValuMart");
             items.add(deal);
 
-            deal = new Deal(null, test_cheese, "3.99", "Cheese", 9, "lb", "Sobey's");
+            deal = new Deal(test_cheese, "3.99", "Cheese", 9, "lb", "Sobey's");
             items.add(deal);
 
-            deal = new Deal(null, test_apple, "0.89", "Apples", 1, "lb", "Zehr's");
+            deal = new Deal(test_apple, "0.89", "Apples", 1, "lb", "Zehr's");
             items.add(deal);
 
-            deal = new Deal(null, test_apple, "1.99", "Appless", -6, "lb", "Metro");
+            deal = new Deal(test_apple, "1.99", "Appless", -6, "lb", "Metro");
             items.add(deal);
 
-            deal = new Deal(null, test_cheese, "6.99", "Cheese", -5, "lb", "Sobey's");
+            deal = new Deal(test_cheese, "6.99", "Cheese", -5, "lb", "Sobey's");
             items.add(deal);
 
-            deal = new Deal(null, test_cheese, "6.99", "Cheese", -1, "lb", "Sobey's");
+            deal = new Deal(test_cheese, "6.99", "Cheese", -1, "lb", "Sobey's");
             items.add(deal);
 
-            deal = new Deal(null, test_cheese, "6.99", "Cheese", -1, "lb", "Sobey's");
+            deal = new Deal(test_cheese, "6.99", "Cheese", -1, "lb", "Sobey's");
             items.add(deal);
         }
 

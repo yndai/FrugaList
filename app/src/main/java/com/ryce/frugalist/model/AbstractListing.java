@@ -10,14 +10,15 @@ import android.graphics.Bitmap;
 public abstract class AbstractListing {
 
     private String product;
-    private Bitmap image;
     private String imageUrl;
 
+    // TODO: these are currently unused!
+    // cached image
+    private Bitmap image;
     // cached thumbnail
     private Bitmap scaledImage;
 
-    public AbstractListing(Bitmap image, String imageUrl, String product) {
-        this.image = image;
+    public AbstractListing(String imageUrl, String product) {
         this.imageUrl = imageUrl;
         this.product = product;
     }

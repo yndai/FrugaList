@@ -13,6 +13,7 @@
         android:id="@+id/dealThumb"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
+        android:scaleType="centerCrop"
         android:src="@android:mipmap/sym_def_app_icon" />
 
     <TextView
@@ -32,7 +33,7 @@
         android:layout_height="30dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Peaches"
-        android:id="@+id/dealText"
+        android:id="@+id/productText"
         android:layout_alignParentTop="true"
         android:layout_alignStart="@+id/priceText"
         android:layout_marginTop="10dp"
@@ -46,7 +47,7 @@
         android:id="@+id/storeText"
         android:layout_marginStart="10dp"
         android:layout_alignTop="@+id/priceText"
-        android:layout_alignEnd="@+id/dealText"
+        android:layout_alignEnd="@+id/productText"
         android:layout_toEndOf="@+id/priceText" />
 
     <TextView

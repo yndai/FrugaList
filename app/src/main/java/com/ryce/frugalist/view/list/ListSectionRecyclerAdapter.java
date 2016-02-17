@@ -2,7 +2,6 @@ package com.ryce.frugalist.view.list;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +12,9 @@ import android.widget.TextView;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.Deal;
-import com.ryce.frugalist.service.FetchImageTask;
 import com.ryce.frugalist.view.detail.ListingDetailActivity;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -41,21 +40,21 @@ public class ListSectionRecyclerAdapter
         if (viewType == ListingType.DEAL.toInteger()) {
 
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.main_list_item, parent, false);
+                    .inflate(R.layout.main_list_item_deal, parent, false);
             return new DealViewHolder(view);
 
         } else if (viewType == ListingType.FREEBIE.toInteger()) {
 
             // TODO: layout not supported now
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.main_list_item, parent, false);
+                    .inflate(R.layout.main_list_item_deal, parent, false);
             return new FreebieViewHolder(view);
 
         } else {
 
             // TODO: what is the default ??
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.main_list_item, parent, false);
+                    .inflate(R.layout.main_list_item_deal, parent, false);
             return new FreebieViewHolder(view);
 
         }
@@ -64,6 +63,7 @@ public class ListSectionRecyclerAdapter
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+
         if (mItemType == ListingType.DEAL) {
 
             final Deal deal = (Deal) mItems.get(position);
@@ -75,23 +75,10 @@ public class ListSectionRecyclerAdapter
             dealHolder.mRatingTextView.setText(deal.getFormattedRating());
             dealHolder.mRatingTextView.setTextColor(deal.getRatingColour());
 
-            if (deal.getImage() == null) {
-
-                new FetchImageTask() {
-                    @Override
-                    protected void onPostExecute(Bitmap result) {
-                        if (result != null) {
-                            deal.setImage(result,
-                                    ListSectionFragment.THUMBNAIL_WIDTH,
-                                    ListSectionFragment.THUMBNAIL_HEIGHT);
-                            dealHolder.mImageView.setImageBitmap(deal.getThumbnail());
-                        }
-                    }
-                }.execute(deal.getImageUrl());
-
-            } else {
-                dealHolder.mImageView.setImageBitmap(deal.getThumbnail());
-            }
+            // load image via URL
+            Picasso p = Picasso.with(dealHolder.mView.getContext());
+            p.setIndicatorsEnabled(true);
+            p.load(deal.getImageUrl()).into(dealHolder.mImageView);
 
             dealHolder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -137,7 +124,7 @@ public class ListSectionRecyclerAdapter
         public DealViewHolder(View view) {
             super(view);
             mView = view;
-            mDealTextView = (TextView) view.findViewById(R.id.dealText);
+            mDealTextView = (TextView) view.findViewById(R.id.productText);
             mPriceTextView = (TextView) view.findViewById(R.id.priceText);
             mStoreTextView = (TextView) view.findViewById(R.id.storeText);
             mRatingTextView = (TextView) view.findViewById(R.id.ratingText);
@@ -165,7 +152,7 @@ public class ListSectionRecyclerAdapter
         public FreebieViewHolder(View view) {
             super(view);
             mView = view;
-            mDealTextView = (TextView) view.findViewById(R.id.dealText);
+            mDealTextView = (TextView) view.findViewById(R.id.productText);
             mPriceTextView = (TextView) view.findViewById(R.id.priceText);
             mStoreTextView = (TextView) view.findViewById(R.id.storeText);
             mRatingTextView = (TextView) view.findViewById(R.id.ratingText);

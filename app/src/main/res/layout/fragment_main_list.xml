@@ -10,5 +10,5 @@
     android:layout_alignParentEnd="true"
     android:paddingBottom="80dp"
     android:clipToPadding="false"
-    tools:listitem="@layout/main_list_item" />
+    tools:listitem="@layout/main_list_item_deal" />
 

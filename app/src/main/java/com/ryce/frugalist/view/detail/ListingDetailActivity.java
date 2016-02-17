@@ -1,21 +1,19 @@
 package com.ryce.frugalist.view.detail;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.Deal;
-import com.ryce.frugalist.service.FetchImageTask;
 import com.ryce.frugalist.view.list.ListSectionFragment;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
+import com.squareup.picasso.Picasso;
 
 public class ListingDetailActivity extends AppCompatActivity {
 
@@ -30,42 +28,35 @@ public class ListingDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        TextView text = (TextView) findViewById(R.id.detailText);
         final ImageView imageView = (ImageView) findViewById(R.id.detailImage);
+        final TextView productText = (TextView) findViewById(R.id.productText);
+        final TextView priceText = (TextView) findViewById(R.id.priceText);
+        final TextView storeText = (TextView) findViewById(R.id.storeNameText);
+        final TextView ratingText = (TextView) findViewById(R.id.ratingText);
 
         ListingType type = (ListingType) getIntent().getExtras().get(ARG_LISTING_TYPE);
 
         if (type == ListingType.DEAL) {
             int pos = (int) getIntent().getExtras().get(ARG_LISTING_DATA);
             final Deal deal = (Deal) ListSectionFragment.items.get(pos);
-            if (deal.getImage() == null) {
 
-                new FetchImageTask() {
-                    @Override
-                    protected void onPostExecute(Bitmap result) {
-                        if (result != null) {
-                            // cache image in model
-                            deal.setImage(result,
-                                    ListSectionFragment.THUMBNAIL_WIDTH,
-                                    ListSectionFragment.THUMBNAIL_HEIGHT);
-                            imageView.setImageBitmap(deal.getImage());
-                        }
-                    }
-                }.execute(deal.getImageUrl());
+            // Load image via URL
+            Picasso p = Picasso.with(this);
+            p.setIndicatorsEnabled(true);
+            p.load(deal.getImageUrl()).into(imageView);
 
-            } else{
-                imageView.setImageBitmap(deal.getImage());
-            }
-            Log.i("deal", deal.toString());
-            //image.setImageBitmap(deal.getImage());
+            productText.setText(deal.getProduct());
+            priceText.setText(deal.getFormattedPrice());
+            storeText.setText(deal.getStore());
+            ratingText.setText(deal.getFormattedRating());
+            ratingText.setTextColor(deal.getRatingColour());
         }
 
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabBookmark);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Bookmarked!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });

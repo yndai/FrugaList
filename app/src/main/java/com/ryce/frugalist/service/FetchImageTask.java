@@ -9,15 +9,14 @@ import java.io.InputStream;
 
 /**
  * Created by Roger_Wang on 2016-02-12.
+ *
+ * TODO: currently deprecated by Picasso, code may come in handy later...
  */
 public class FetchImageTask extends AsyncTask<String, Void, Bitmap> {
 
     public FetchImageTask() {
     }
 
-    /**
-     * TODO: show spinner, etc
-     */
     @Override
     protected void onPreExecute() {
         super.onPreExecute();

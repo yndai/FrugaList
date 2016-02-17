@@ -53,23 +53,19 @@
         tools:context="com.ryce.frugalist.view.detail.ListingDetailActivity"
         tools:showIn="@layout/activity_listing_detail">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/text_margin"
-            android:text="@string/large_text"
-            android:id="@+id/detailText" />
+        <include layout="@layout/listing_detail_content" />
 
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fabBookmark"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         app:layout_anchor="@id/appbar"
-        app:layout_anchorGravity="bottom|right|end"
-        android:src="@android:drawable/ic_delete"
+        app:layout_anchorGravity="bottom|center"
+        android:src="@android:drawable/ic_input_add"
+        android:tint="@android:color/white"
         android:layout_margin="@dimen/fab_margin"
-        android:clickable="true"/>
+        android:clickable="true" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Peaches"
+        android:id="@+id/productText"
+        android:layout_marginTop="36dp"
+        android:layout_marginStart="20dp"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="2.99/lb"
+        android:id="@+id/priceText"
+        android:layout_below="@+id/productText"
+        android:layout_alignStart="@+id/productText"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="+200"
+        android:id="@+id/ratingText"
+        android:gravity="center"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/upButton"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="0dp" />
+
+    <TextView
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Sobey&apos;s"
+        android:id="@+id/storeNameText"
+        android:layout_below="@+id/priceText"
+        android:layout_alignStart="@+id/priceText"
+        android:layout_marginTop="21dp" />
+
+    <TextView
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="200 Erb St W"
+        android:id="@+id/storeAddressText"
+        android:layout_below="@+id/storeNameText"
+        android:layout_alignStart="@+id/storeNameText"
+        android:layout_marginTop="10dp" />
+
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="35dp"
+        android:id="@+id/upButton"
+        android:src="@drawable/arrow_up"
+        android:scaleType="fitCenter"
+        android:layout_alignStart="@id/ratingText"
+        android:backgroundTint="#8bc34a"
+        android:layout_marginTop="20dp" />
+
+    <ImageButton
+        android:layout_width="80dp"
+        android:layout_height="35dp"
+        android:id="@+id/downButton"
+        android:src="@drawable/arrow_down"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="0dp"
+        android:layout_below="@+id/ratingText"
+        android:layout_alignStart="@+id/ratingText"
+        android:backgroundTint="#d32f2f" />
+
+</RelativeLayout>
