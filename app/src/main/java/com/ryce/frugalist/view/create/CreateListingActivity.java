@@ -1,8 +1,13 @@
 package com.ryce.frugalist.view.create;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -12,10 +17,17 @@ import android.widget.ImageView;
 
 import com.ryce.frugalist.R;
 
+import java.io.File;
+import java.util.Date;
+
 /**
  * Created by shivand on 2/15/2016.
  */
 public class CreateListingActivity extends AppCompatActivity {
+
+    ImageView iv;
+    final private int CAPTURE_IMAGE = 2;
+    private String imgPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,14 +37,39 @@ public class CreateListingActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             //getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
         }
-        ImageView iv = (ImageView) findViewById(R.id.cameraView);
+        iv = (ImageView) findViewById(R.id.cameraView);
         iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, 0);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, setImageUri());
+                startActivityForResult(intent, CAPTURE_IMAGE);
             }
         });
+    }
+
+    public Uri setImageUri() {
+        // Store image in dcim
+        File file = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "image" + new Date().getTime() + ".png");
+        Uri imgUri = Uri.fromFile(file);
+        this.imgPath = file.getAbsolutePath();
+        return imgUri;
+    }
+
+
+    public String getImagePath() {
+        return imgPath;
+    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO Auto-generated method stub
+        if (resultCode != Activity.RESULT_CANCELED) {
+            if (requestCode == CAPTURE_IMAGE) {
+                String selectedImagePath = getImagePath();
+                iv.setImageBitmap(BitmapFactory.decodeFile(selectedImagePath));
+            } else {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
     }
 
     @Override
@@ -47,11 +84,15 @@ public class CreateListingActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
-
         public PlaceholderFragment() { }
 
         @Override
@@ -61,5 +102,8 @@ public class CreateListingActivity extends AppCompatActivity {
                     container, false);
             return rootView;
         }
+
     }
+
+
 }
