@@ -6,5 +6,18 @@
     <string name="title_activity_listing_detail"></string>
     <string name="title_activity_login">LoginActivity</string>
 
+    <string name="choose_image_upload_status_uploading">uploading…</string>
+    <string name="choose_image_upload_status_success">uploaded to Imgur.</string>
+    <string name="choose_image_upload_status_failure">upload failed.</string>
+    <string name="imgur_upload_error">Error uploading image to Imgur. Please try again later.</string>
+
+    <string name="discard_title">Discard</string>
+    <string name="discard_question">Discard the upload?</string>
+    <string name="yes_discard">Yes, discard</string>
+    <string name="Cancel">Cancel</string>
+
+    <string name="link_label">Link</string>
+    <string name="copied_link">Copied link to clipboard.</string>
+
 
 </resources>
