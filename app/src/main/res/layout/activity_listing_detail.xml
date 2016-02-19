@@ -29,6 +29,7 @@
 
             <ImageView
                 android:id="@+id/detailImage"
+                android:contentDescription="@string/picture_not_available"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"

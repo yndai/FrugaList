@@ -157,6 +157,12 @@ public class CreateListingActivity extends AppCompatActivity {
                     .placeholder(R.drawable.ic_photo_library_black)
                     .fit()
                     .into(mPhotoImageView);
+        } else if (requestCode == CAPTURE_IMAGE && resultCode == RESULT_CANCELED) {
+            // if user cancels out of the camera without taking a picture, we need to remove the temporary file
+            if (mImgFile != null && mImgFile.exists()) {
+                mImgFile.delete();
+                mImgFile = null;
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
