@@ -43,7 +43,7 @@ public class ListingDetailActivity extends AppCompatActivity {
 
             // fetch deal by id
             UUID id = (UUID) getIntent().getExtras().get(ARG_LISTING_DATA);
-            final Deal deal = (Deal) MockDatastore.getInstance().getDeal(id);
+            final Deal deal = MockDatastore.getInstance().getDeal(id);
 
             // Load image via URL
             Picasso p = Picasso.with(this);
