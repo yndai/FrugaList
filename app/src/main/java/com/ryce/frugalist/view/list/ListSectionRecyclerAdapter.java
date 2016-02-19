@@ -78,7 +78,10 @@ public class ListSectionRecyclerAdapter
             // load image via URL
             Picasso p = Picasso.with(dealHolder.mView.getContext());
             p.setIndicatorsEnabled(true);
-            p.load(deal.getImageUrl()).into(dealHolder.mImageView);
+            p.load(deal.getImageUrl())
+                    .error(android.R.drawable.ic_delete)
+                    .placeholder(R.drawable.loader)
+                    .into(dealHolder.mImageView);
 
             dealHolder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -86,7 +89,7 @@ public class ListSectionRecyclerAdapter
                     Context context = v.getContext();
                     Intent intent = new Intent(context, ListingDetailActivity.class);
                     intent.putExtra(ListingDetailActivity.ARG_LISTING_TYPE, mItemType);
-                    intent.putExtra(ListingDetailActivity.ARG_LISTING_DATA, position);
+                    intent.putExtra(ListingDetailActivity.ARG_LISTING_DATA, deal.getId());
                     context.startActivity(intent);
                 }
             });
@@ -106,6 +109,14 @@ public class ListSectionRecyclerAdapter
     @Override
     public int getItemViewType(int position) {
         return mItemType.toInteger();
+    }
+
+    /**
+     * @param deal
+     */
+    public void addItem(Deal deal) {
+        mItems.add(deal);
+        notifyDataSetChanged();
     }
 
     /**

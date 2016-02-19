@@ -2,6 +2,8 @@ package com.ryce.frugalist.model;
 
 import android.graphics.Bitmap;
 
+import java.util.UUID;
+
 /**
  * Created by Tony on 2016-02-07.
  *
@@ -9,6 +11,7 @@ import android.graphics.Bitmap;
  */
 public abstract class AbstractListing {
 
+    private UUID id;
     private String product;
     private String imageUrl;
 
@@ -19,6 +22,7 @@ public abstract class AbstractListing {
     private Bitmap scaledImage;
 
     public AbstractListing(String imageUrl, String product) {
+        id = UUID.randomUUID();
         this.imageUrl = imageUrl;
         this.product = product;
     }
@@ -27,6 +31,10 @@ public abstract class AbstractListing {
         this.image = image;
         // cache a thumbnail
         scaledImage = Bitmap.createScaledBitmap(image, width, height, false);
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public Bitmap getImage() {
@@ -40,8 +48,6 @@ public abstract class AbstractListing {
     public String getProduct() {
         return product;
     }
-
-    // convenience methods
 
     public Bitmap getThumbnail() {
         return scaledImage;

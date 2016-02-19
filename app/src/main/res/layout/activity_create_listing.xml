@@ -1,14 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Dummy item to prevent TextView from receiving initial focus -->
+    <LinearLayout
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
 
-    <ImageButton
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="250dp"
+            android:id="@+id/cameraView"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:scaleType="center"
+            android:src="@android:drawable/ic_menu_camera" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/productLayout"
+            style="@style/DefTextInputLayout"
+            android:layout_centerVertical="true"
+            android:layout_below="@+id/cameraView">
+
+            <EditText
+                android:id="@+id/productInput"
+                style="@style/DefEditText"
+                android:hint="@string/create_product"
+                android:inputType="text" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/priceLayout"
+            style="@style/DefTextInputLayout"
+            android:layout_width="180dp"
+            android:layout_below="@+id/productLayout"
+            android:layout_centerVertical="true">
+
+            <EditText
+                android:id="@+id/priceInput"
+                style="@style/DefEditText"
+                android:hint="@string/create_price"
+                android:inputType="text" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/unitLayout"
+            style="@style/DefTextInputLayout"
+            android:layout_width="180dp"
+            android:layout_below="@+id/productLayout"
+            android:layout_toRightOf="@+id/priceLayout"
+            android:layout_alignParentEnd="true">
+
+            <EditText
+                android:id="@+id/unitInput"
+                style="@style/DefEditText"
+                android:hint="@string/create_unit"
+                android:inputType="text" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/storeLayout"
+            style="@style/DefTextInputLayout"
+            android:layout_below="@+id/priceLayout"
+            android:layout_centerVertical="true">
+
+            <EditText
+                android:id="@+id/storeInput"
+                style="@style/DefEditText"
+                android:hint="@string/create_store"
+                android:inputType="text" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/addressLayout"
+            style="@style/DefTextInputLayout"
+            android:layout_below="@+id/storeLayout"
+            android:layout_centerVertical="true">
+
+            <EditText
+                android:id="@+id/addressInput"
+                style="@style/DefEditText"
+                android:hint="@string/create_address"
+                android:inputType="text" />
+        </android.support.design.widget.TextInputLayout>
+
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/uploadFab"
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:id="@+id/cameraView"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_menu_upload"
+        android:scaleType="center" />
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

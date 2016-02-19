@@ -10,7 +10,8 @@ import android.view.ViewGroup;
 
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
-import com.ryce.frugalist.model.Deal;
+import com.ryce.frugalist.model.MockDatastore;
+import com.ryce.frugalist.view.list.ListSectionPagerAdapter.ListSections;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,21 +37,12 @@ public class ListSectionFragment extends Fragment {
     }
 
     /**
-     * Enum of section types
-     */
-    public enum ListSections {
-        NEARBY(0), HOTTEST(1), FREEBIE(2);
-        int val;
-        ListSections(int val) { this.val = val; }
-        public int toInteger() { return val; }
-    }
-
-    /**
      * The fragment argument representing the section number for this
      * fragment.
      */
     public static final String ARG_SECTION_NUMBER = "section_number";
 
+    private ListSectionRecyclerAdapter mListAdapter;
 
     public ListSectionFragment() {
     }
@@ -67,61 +59,38 @@ public class ListSectionFragment extends Fragment {
         return fragment;
     }
 
-    public static List<AbstractListing> items = new ArrayList<AbstractListing>();
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main_list, container, false);
-        //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-        //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.mainListView);
-        recyclerView.setHasFixedSize(true);
+
+        // get section number
+        int listSection = getArguments().getInt(ARG_SECTION_NUMBER);
+
+        // TODO: only display for nearby for now...
+        if (listSection != ListSections.NEARBY.toInteger()) {
+            return rootView;
+        }
 
         // use a linear layout manager
-        // make this a class level var
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        String test_apple = "http://imgur.com/2dozFb1.jpg";
-        String test_cheese = "http://imgur.com/G0f4Lbb.jpg";
-        String test_peach = "http://imgur.com/M5b16xH.jpg";
 
-        if (items.isEmpty()) {
-            // TEST DATA
-            // TODO: should move data to model module somehow so all activities can access
-            Deal deal = new Deal(test_peach, "2.99", "Peachy", 5, "lb", "Zehr's");
-            items.add(deal);
+        List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getDeals().values());
 
-            deal = new Deal(test_apple, "0.99", "Apple", 7, "lb", "ValuMart");
-            items.add(deal);
-
-            deal = new Deal(test_cheese, "3.99", "Cheese", 9, "lb", "Sobey's");
-            items.add(deal);
-
-            deal = new Deal(test_apple, "0.89", "Apples", 1, "lb", "Zehr's");
-            items.add(deal);
-
-            deal = new Deal(test_apple, "1.99", "Appless", -6, "lb", "Metro");
-            items.add(deal);
-
-            deal = new Deal(test_cheese, "6.99", "Cheese", -5, "lb", "Sobey's");
-            items.add(deal);
-
-            deal = new Deal(test_cheese, "6.99", "Cheese", -1, "lb", "Sobey's");
-            items.add(deal);
-
-            deal = new Deal(test_cheese, "6.99", "Cheese", -1, "lb", "Sobey's");
-            items.add(deal);
-        }
-
-        recyclerView.setAdapter(new ListSectionRecyclerAdapter(items, ListingType.DEAL));
+        mListAdapter = new ListSectionRecyclerAdapter(items, ListingType.DEAL);
+        MockDatastore.getInstance().addListener(mListAdapter);
+        recyclerView.setAdapter(mListAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null, false, true));
 
         return rootView;
     }
 
-
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        MockDatastore.getInstance().removeListener(mListAdapter);
+    }
 }

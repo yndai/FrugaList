@@ -33,6 +33,7 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:fitsSystemWindows="true"
+                android:src="@drawable/ic_photo_library_black"
                 app:layout_collapseMode="parallax" />
 
             <android.support.v7.widget.Toolbar

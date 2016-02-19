@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:scaleType="centerCrop"
-        android:src="@android:mipmap/sym_def_app_icon" />
+        android:src="@drawable/ic_photo_library_black" />
 
     <TextView
         android:layout_width="wrap_content"

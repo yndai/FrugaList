@@ -11,12 +11,13 @@ import android.widget.TextView;
 
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.Deal;
-import com.ryce.frugalist.view.list.ListSectionFragment;
+import com.ryce.frugalist.model.MockDatastore;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
 import com.squareup.picasso.Picasso;
 
-public class ListingDetailActivity extends AppCompatActivity {
+import java.util.UUID;
 
+public class ListingDetailActivity extends AppCompatActivity {
 
     public static final String ARG_LISTING_TYPE = "listing_type";
     public static final String ARG_LISTING_DATA = "listing_data";
@@ -28,23 +29,31 @@ public class ListingDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // get views
         final ImageView imageView = (ImageView) findViewById(R.id.detailImage);
         final TextView productText = (TextView) findViewById(R.id.productText);
         final TextView priceText = (TextView) findViewById(R.id.priceText);
         final TextView storeText = (TextView) findViewById(R.id.storeNameText);
         final TextView ratingText = (TextView) findViewById(R.id.ratingText);
 
+        // get type of listing we are displaying
         ListingType type = (ListingType) getIntent().getExtras().get(ARG_LISTING_TYPE);
 
         if (type == ListingType.DEAL) {
-            int pos = (int) getIntent().getExtras().get(ARG_LISTING_DATA);
-            final Deal deal = (Deal) ListSectionFragment.items.get(pos);
+
+            // fetch deal by id
+            UUID id = (UUID) getIntent().getExtras().get(ARG_LISTING_DATA);
+            final Deal deal = (Deal) MockDatastore.getInstance().getDeal(id);
 
             // Load image via URL
             Picasso p = Picasso.with(this);
             p.setIndicatorsEnabled(true);
-            p.load(deal.getImageUrl()).into(imageView);
+            p.load(deal.getImageUrl())
+                    .error(android.R.drawable.ic_delete)
+                    .placeholder(R.drawable.loader)
+                    .into(imageView);
 
+            // display data
             productText.setText(deal.getProduct());
             priceText.setText(deal.getFormattedPrice());
             storeText.setText(deal.getStore());
@@ -60,6 +69,10 @@ public class ListingDetailActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // we want a back button in task bar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 }

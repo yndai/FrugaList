@@ -1,4 +1,4 @@
-package com.ryce.frugalist.service;
+package com.ryce.frugalist.network;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
