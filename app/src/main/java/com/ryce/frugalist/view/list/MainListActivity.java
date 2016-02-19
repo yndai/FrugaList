@@ -14,7 +14,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.ryce.frugalist.R;
+import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.view.create.CreateListingActivity;
+import com.ryce.frugalist.view.login.LoginActivity;
 
 public class MainListActivity extends AppCompatActivity {
 
@@ -64,6 +66,12 @@ public class MainListActivity extends AppCompatActivity {
                 context.startActivity(intent);
             }
         });
+
+        // go to login if not logged in
+        if (!UserHelper.isLoggedIn()) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        }
 
     }
 
