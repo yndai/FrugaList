@@ -16,7 +16,7 @@ public class ListSectionPagerAdapter extends FragmentPagerAdapter {
      * Enum of section types
      */
     public enum ListSections {
-        NEARBY(0), HOTTEST(1), FREEBIE(2);
+        NEARBY(0), HOTTEST(1), FREEBIE(2), SAVED(3);
         int val;
         ListSections(int val) { this.val = val; }
         public int toInteger() { return val; }
@@ -38,7 +38,7 @@ public class ListSectionPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         // Show 3 total pages.
-        return 3;
+        return 4;
     }
 
     @Override
@@ -50,6 +50,8 @@ public class ListSectionPagerAdapter extends FragmentPagerAdapter {
                 return "Hottest";
             case 2:
                 return "Freebies";
+            case 3:
+                return "Saved";
         }
         return null;
     }
