@@ -22,8 +22,14 @@ public class MockDatastore {
     // deal store
     Map<UUID, Deal> deals = new LinkedHashMap<UUID, Deal>();
 
-    // listeners
-    List<ListSectionRecyclerAdapter> listeners = new ArrayList<ListSectionRecyclerAdapter>();
+    // deals Listeners
+    List<ListSectionRecyclerAdapter> dealsListeners = new ArrayList<ListSectionRecyclerAdapter>();
+
+    // mock user bookmarks
+    Map<UUID, Deal> bookmarks = new LinkedHashMap<UUID, Deal>();
+
+    // deals Listeners
+    List<ListSectionRecyclerAdapter> bookmarkListeners = new ArrayList<ListSectionRecyclerAdapter>();
 
     /**
      * disallow instantiation
@@ -62,15 +68,17 @@ public class MockDatastore {
         deals.put(deal.getId(), deal);
     }
 
+    // DEAL methods
+
     public Map<UUID, Deal> getDeals() {
         return deals;
     }
 
-    public void addListener(ListSectionRecyclerAdapter adapter) {
-        listeners.add(adapter);
+    public void addDealsListener(ListSectionRecyclerAdapter adapter) {
+        dealsListeners.add(adapter);
     }
-    public void removeListener(ListSectionRecyclerAdapter adapter) {
-        listeners.remove(adapter);
+    public void removeDealsListener(ListSectionRecyclerAdapter adapter) {
+        dealsListeners.remove(adapter);
     }
 
     public Deal getDeal(UUID id) {
@@ -78,10 +86,48 @@ public class MockDatastore {
     }
 
     public void addDeal(Deal deal) {
-        deals.put(deal.getId(), deal);
-        // notify
-        for (ListSectionRecyclerAdapter adapter : listeners) {
-            adapter.addItem(deal);
+        if (!deals.containsKey(deal.getId())) {
+            deals.put(deal.getId(), deal);
+            // notify
+            for (ListSectionRecyclerAdapter adapter : dealsListeners) {
+                adapter.addItem(deal);
+            }
         }
     }
+
+    // BOOKMARK methods
+
+    public Map<UUID, Deal> getBookmarks() {
+        return bookmarks;
+    }
+
+    public void addBookmarksListener(ListSectionRecyclerAdapter adapter) {
+        bookmarkListeners.add(adapter);
+    }
+    public void removeBookmarksListener(ListSectionRecyclerAdapter adapter) {
+        bookmarkListeners.remove(adapter);
+    }
+
+    public void removeBookmark(Deal deal) {
+        if (bookmarks.containsKey(deal.getId())) {
+            bookmarks.remove(deal.getId());
+            // notify
+            for (ListSectionRecyclerAdapter adapter : bookmarkListeners) {
+                adapter.removeItem(deal);
+            }
+        }
+    }
+
+    public void addBookmark(Deal deal) {
+        if (!bookmarks.containsKey(deal.getId())) {
+            bookmarks.put(deal.getId(), deal);
+            // notify
+            for (ListSectionRecyclerAdapter adapter : bookmarkListeners) {
+                adapter.addItem(deal);
+            }
+        }
+    }
+
+
+
 }

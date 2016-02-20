@@ -15,10 +15,10 @@ public class ListSectionPagerAdapter extends FragmentPagerAdapter {
     /**
      * Enum of section types
      */
-    public enum ListSections {
+    public enum ListSection {
         NEARBY(0), HOTTEST(1), FREEBIE(2), SAVED(3);
         int val;
-        ListSections(int val) { this.val = val; }
+        ListSection(int val) { this.val = val; }
         public int toInteger() { return val; }
     }
 
@@ -31,7 +31,7 @@ public class ListSectionPagerAdapter extends FragmentPagerAdapter {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
 
-        int sectionNumber = ListSections.values()[position].toInteger();
+        int sectionNumber = ListSection.values()[position].toInteger();
         return ListSectionFragment.newInstance(sectionNumber);
     }
 

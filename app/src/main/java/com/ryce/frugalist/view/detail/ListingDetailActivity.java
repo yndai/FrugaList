@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ryce.frugalist.R;
+import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.Deal;
 import com.ryce.frugalist.model.MockDatastore;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
@@ -21,6 +22,9 @@ public class ListingDetailActivity extends AppCompatActivity {
 
     public static final String ARG_LISTING_TYPE = "listing_type";
     public static final String ARG_LISTING_DATA = "listing_data";
+
+    private ListingType mType;
+    private AbstractListing mListing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +41,14 @@ public class ListingDetailActivity extends AppCompatActivity {
         final TextView ratingText = (TextView) findViewById(R.id.ratingText);
 
         // get type of listing we are displaying
-        ListingType type = (ListingType) getIntent().getExtras().get(ARG_LISTING_TYPE);
+        mType = (ListingType) getIntent().getExtras().get(ARG_LISTING_TYPE);
 
-        if (type == ListingType.DEAL) {
+        if (mType == ListingType.DEAL) {
 
             // fetch deal by id
             UUID id = (UUID) getIntent().getExtras().get(ARG_LISTING_DATA);
-            final Deal deal = MockDatastore.getInstance().getDeal(id);
+            mListing = MockDatastore.getInstance().getDeal(id);
+            final Deal deal = (Deal) mListing;
 
             // Load image via URL
             Picasso p = Picasso.with(this);
@@ -65,6 +70,9 @@ public class ListingDetailActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (mType == ListingType.DEAL) {
+                    MockDatastore.getInstance().addBookmark((Deal) mListing);
+                }
                 Snackbar.make(view, "Bookmarked!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }

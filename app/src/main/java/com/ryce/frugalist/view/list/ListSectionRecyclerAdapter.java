@@ -2,6 +2,7 @@ package com.ryce.frugalist.view.list;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +13,11 @@ import android.widget.TextView;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.Deal;
+import com.ryce.frugalist.model.MockDatastore;
+import com.ryce.frugalist.util.Utils;
 import com.ryce.frugalist.view.detail.ListingDetailActivity;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
+import com.ryce.frugalist.view.list.ListSectionPagerAdapter.ListSection;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -26,12 +30,17 @@ import java.util.List;
 public class ListSectionRecyclerAdapter
         extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private final Context mContext;
     private final List<AbstractListing> mItems;
     private final ListingType mItemType;
+    private final ListSection mListSection;
 
-    public ListSectionRecyclerAdapter(List<AbstractListing> items, ListingType itemType) {
+    public ListSectionRecyclerAdapter(Context context,
+            List<AbstractListing> items, ListingType itemType, ListSection listSection) {
+        mContext = context;
         mItems = items;
         mItemType = itemType;
+        mListSection = listSection;
     }
 
     @Override
@@ -76,10 +85,13 @@ public class ListSectionRecyclerAdapter
             dealHolder.mRatingTextView.setTextColor(deal.getRatingColour());
 
             // load image via URL
+            // note we get height of picture frame (in pixels)
+            int height = (int) mContext.getResources().getDimension(R.dimen.list_item_height);
             Picasso p = Picasso.with(dealHolder.mView.getContext());
             p.setIndicatorsEnabled(true);
             p.load(deal.getImageUrl())
                     .error(android.R.drawable.ic_delete)
+                    .resize(height, height)
                     .placeholder(R.drawable.loader)
                     .into(dealHolder.mImageView);
 
@@ -91,6 +103,24 @@ public class ListSectionRecyclerAdapter
                     intent.putExtra(ListingDetailActivity.ARG_LISTING_TYPE, mItemType);
                     intent.putExtra(ListingDetailActivity.ARG_LISTING_DATA, deal.getId());
                     context.startActivity(intent);
+                }
+            });
+            dealHolder.mView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (mListSection == ListSection.SAVED) {
+                        // in the book marks section, we delete instead
+                        MockDatastore.getInstance().removeBookmark(deal);
+                        Snackbar.make(v, "Removed bookmark", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+
+                    } else {
+                        // in a deals section, we add a bookmark
+                        MockDatastore.getInstance().addBookmark(deal);
+                        Snackbar.make(v, "Bookmarked!", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
+                    return true;
                 }
             });
 
@@ -111,11 +141,13 @@ public class ListSectionRecyclerAdapter
         return mItemType.toInteger();
     }
 
-    /**
-     * @param deal
-     */
     public void addItem(Deal deal) {
         mItems.add(deal);
+        notifyDataSetChanged();
+    }
+
+    public void removeItem(Deal deal) {
+        mItems.remove(deal);
         notifyDataSetChanged();
     }
 

@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.MockDatastore;
-import com.ryce.frugalist.view.list.ListSectionPagerAdapter.ListSections;
+import com.ryce.frugalist.view.list.ListSectionPagerAdapter.ListSection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +42,7 @@ public class ListSectionFragment extends Fragment {
      */
     public static final String ARG_SECTION_NUMBER = "section_number";
 
+    private ListSection mListSection;
     private ListSectionRecyclerAdapter mListAdapter;
 
     public ListSectionFragment() {
@@ -67,30 +68,53 @@ public class ListSectionFragment extends Fragment {
 
         // get section number
         int listSection = getArguments().getInt(ARG_SECTION_NUMBER);
+        mListSection = ListSection.values()[listSection];
 
         // TODO: only display for nearby for now...
-        if (listSection != ListSections.NEARBY.toInteger()) {
+        if (listSection == ListSection.NEARBY.toInteger()) {
+
+            // use a linear layout manager
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(layoutManager);
+
+
+            List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getDeals().values());
+
+            mListAdapter = new ListSectionRecyclerAdapter(getContext(), items, ListingType.DEAL, mListSection);
+            MockDatastore.getInstance().addDealsListener(mListAdapter);
+            recyclerView.setAdapter(mListAdapter);
+            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null, false, true));
+
+            return rootView;
+
+        } else if (listSection == ListSection.SAVED.toInteger()) {
+
+            // use a linear layout manager
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(layoutManager);
+
+
+            List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getBookmarks().values());
+
+            mListAdapter = new ListSectionRecyclerAdapter(getContext(), items, ListingType.DEAL, mListSection);
+            MockDatastore.getInstance().addBookmarksListener(mListAdapter);
+            recyclerView.setAdapter(mListAdapter);
+            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null, false, true));
+
+            return rootView;
+
+        } else {
             return rootView;
         }
-
-        // use a linear layout manager
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-
-
-        List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getDeals().values());
-
-        mListAdapter = new ListSectionRecyclerAdapter(items, ListingType.DEAL);
-        MockDatastore.getInstance().addListener(mListAdapter);
-        recyclerView.setAdapter(mListAdapter);
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null, false, true));
-
-        return rootView;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        MockDatastore.getInstance().removeListener(mListAdapter);
+        if (mListSection == ListSection.NEARBY) {
+            MockDatastore.getInstance().removeDealsListener(mListAdapter);
+        } else if (mListSection == ListSection.SAVED) {
+            MockDatastore.getInstance().removeBookmarksListener(mListAdapter);
+        }
     }
 }
