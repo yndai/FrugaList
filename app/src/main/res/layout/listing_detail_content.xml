@@ -75,4 +75,12 @@
         android:layout_alignStart="@+id/ratingText"
         android:backgroundTint="#d32f2f" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show on Map"
+        android:id="@+id/mapButton"
+        android:layout_below="@+id/storeAddressText"
+        android:layout_alignStart="@+id/storeAddressText" />
+
 </RelativeLayout>

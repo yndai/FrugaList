@@ -43,28 +43,28 @@ public class MockDatastore {
         String test_cheese = "http://imgur.com/G0f4Lbb.jpg";
         String test_peach = "http://imgur.com/M5b16xH.jpg";
 
-        Deal deal = new Deal(test_peach, "2.99", "Peachy", 5, "lb", "Zehr's");
+        Deal deal = new Deal(test_peach, "2.99", "Peachy", 5, "lb", "Zehr's", "450 Erb St W, Waterloo");
         deals.put(deal.getId(), deal);
 
-        deal = new Deal(test_apple, "0.99", "Apple", 7, "lb", "ValuMart");
+        deal = new Deal(test_apple, "0.99", "Apple", 7, "lb", "ValuMart", "75 King St N, Waterloo");
         deals.put(deal.getId(), deal);
 
-        deal = new Deal(test_cheese, "3.99", "Cheese", 9, "lb", "Sobey's");
+        deal = new Deal(test_cheese, "3.99", "Cheese", 9, "lb", "Sobey's", "450 Columbia St W, Waterloo");
         deals.put(deal.getId(), deal);
 
-        deal = new Deal(test_apple, "0.89", "Apples", 1, "lb", "Zehr's");
+        deal = new Deal(test_apple, "0.89", "Apples", 1, "lb", "Zehr's", "450 Erb St W, Waterloo");
         deals.put(deal.getId(), deal);
 
-        deal = new Deal(test_apple, "1.99", "Appless", -6, "lb", "Metro");
+        deal = new Deal(test_apple, "1.99", "Appless", -6, "lb", "Food Basics", "851 Fischer Hallman Rd, Kitchener");
         deals.put(deal.getId(), deal);
 
-        deal = new Deal(test_cheese, "6.99", "Cheese", -5, "lb", "Sobey's");
+        deal = new Deal(test_cheese, "6.99", "Cheese", -5, "lb", "Sobey's", "450 Columbia St W, Waterloo");
         deals.put(deal.getId(), deal);
 
-        deal = new Deal(test_cheese, "6.99", "Cheese", -1, "lb", "Sobey's");
+        deal = new Deal(test_cheese, "6.99", "Cheese", -1, "lb", "Sobey's", "450 Columbia St W, Waterloo");
         deals.put(deal.getId(), deal);
 
-        deal = new Deal(test_cheese, "6.99", "Cheese", -1, "lb", "Sobey's");
+        deal = new Deal(test_cheese, "6.99", "Cheese", -1, "lb", "Sobey's", "450 Columbia St W, Waterloo");
         deals.put(deal.getId(), deal);
     }
 

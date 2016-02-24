@@ -68,7 +68,8 @@ public class CreateListingActivity extends AppCompatActivity {
                     mProductInput.getText().toString(),
                     0,
                     mUnitInput.getText().toString(),
-                    mStoreInput.getText().toString());
+                    mStoreInput.getText().toString(),
+                    mAddressInput.getText().toString());
 
             MockDatastore.getInstance().addDeal(deal);
 

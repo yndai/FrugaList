@@ -1,11 +1,14 @@
 package com.ryce.frugalist.view.detail;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,6 +19,8 @@ import com.ryce.frugalist.model.MockDatastore;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
 import com.squareup.picasso.Picasso;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.UUID;
 
 public class ListingDetailActivity extends AppCompatActivity {
@@ -39,6 +44,7 @@ public class ListingDetailActivity extends AppCompatActivity {
         final TextView priceText = (TextView) findViewById(R.id.priceText);
         final TextView storeText = (TextView) findViewById(R.id.storeNameText);
         final TextView ratingText = (TextView) findViewById(R.id.ratingText);
+        final TextView addressText = (TextView) findViewById(R.id.storeAddressText);
 
         // get type of listing we are displaying
         mType = (ListingType) getIntent().getExtras().get(ARG_LISTING_TYPE);
@@ -62,6 +68,7 @@ public class ListingDetailActivity extends AppCompatActivity {
             productText.setText(deal.getProduct());
             priceText.setText(deal.getFormattedPrice());
             storeText.setText(deal.getStore());
+            addressText.setText(deal.getAddress());
             ratingText.setText(deal.getFormattedRating());
             ratingText.setTextColor(deal.getRatingColour());
         }
@@ -78,9 +85,37 @@ public class ListingDetailActivity extends AppCompatActivity {
             }
         });
 
+        Button mapButton = (Button) findViewById(R.id.mapButton);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = getMapViewIntent(mListing.getAddress());
+                startActivity(intent);
+            }
+        });
+
         // we want a back button in task bar
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    /**
+     * Create a google maps intent
+     * @param address
+     * @return
+     */
+    public static Intent getMapViewIntent(String address) {
+        Intent intent = null;
+        try {
+            Uri url = Uri.parse(
+                    String.format("geo:0,0?q=%s", URLEncoder.encode(address, "UTF-8")));
+            intent = new Intent(Intent.ACTION_VIEW, url);
+            intent.setPackage("com.google.android.apps.maps");
+        } catch (UnsupportedEncodingException e) {
+            // Not handling this because UTF-8 is always supported
+            // http://developer.android.com/reference/java/nio/charset/Charset.html
+        }
+        return intent;
     }
 }

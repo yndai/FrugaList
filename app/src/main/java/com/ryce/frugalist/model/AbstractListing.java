@@ -14,6 +14,7 @@ public abstract class AbstractListing {
     private UUID id;
     private String product;
     private String imageUrl;
+    private String address;
 
     // TODO: these are currently unused!
     // cached image
@@ -21,10 +22,11 @@ public abstract class AbstractListing {
     // cached thumbnail
     private Bitmap scaledImage;
 
-    public AbstractListing(String imageUrl, String product) {
+    public AbstractListing(String imageUrl, String product, String address) {
         id = UUID.randomUUID();
         this.imageUrl = imageUrl;
         this.product = product;
+        this.address = address;
     }
 
     public void setImage(Bitmap image, int width, int height) {
@@ -43,6 +45,10 @@ public abstract class AbstractListing {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
     public String getProduct() {
