@@ -10,11 +10,18 @@ import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.Deal;
 import com.ryce.frugalist.model.MockDatastore;
@@ -23,6 +30,7 @@ import com.ryce.frugalist.network.ImgurResponse;
 import com.ryce.frugalist.network.ImgurServiceHelper;
 import com.ryce.frugalist.util.Utils;
 import com.squareup.picasso.Picasso;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -42,6 +50,8 @@ public class CreateListingActivity extends AppCompatActivity {
 
     // arbitrary request code for image capture
     private static final int CAPTURE_IMAGE = 2;
+    // for autocompleting the address and store
+    private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 9;
 
     ImageView mPhotoImageView;
     FloatingActionButton mUploadButton;
@@ -57,6 +67,7 @@ public class CreateListingActivity extends AppCompatActivity {
     private File mImgFile;
 
     private boolean mImgIsReady;
+
 
     Callback<ImgurResponse> mImgurResponseCallback = new Callback<ImgurResponse>() {
         @Override
@@ -142,6 +153,34 @@ public class CreateListingActivity extends AppCompatActivity {
             }
         });
 
+        // set up the autocomplete intents for address and store
+        mStoreInput.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                try {
+                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(CreateListingActivity.this);
+                    // Intent intent = new Intent(CreateListingActivity.this, GooglePlacesAutocompleteActivity.class);
+                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                } catch (GooglePlayServicesRepairableException e) {
+                    // TODO: Handle the error.
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    // TODO: Handle the error.
+                } finally {
+                    // TODO: Handle the error
+                }
+            }
+        });
     }
 
     @Override
@@ -163,6 +202,18 @@ public class CreateListingActivity extends AppCompatActivity {
             if (mImgFile != null && mImgFile.exists()) {
                 mImgFile.delete();
                 mImgFile = null;
+            }
+        } else if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                Log.i("...", "Place: " + place.getName());
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                // TODO: Handle the error.
+                Log.i("...", status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
             }
         }
 
