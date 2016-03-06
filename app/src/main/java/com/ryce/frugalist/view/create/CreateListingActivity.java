@@ -13,14 +13,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.Deal;
@@ -51,7 +56,7 @@ public class CreateListingActivity extends AppCompatActivity {
     // arbitrary request code for image capture
     private static final int CAPTURE_IMAGE = 2;
     // for autocompleting the address and store
-    private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 9;
+    private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE_STORE = 9;
 
     ImageView mPhotoImageView;
     FloatingActionButton mUploadButton;
@@ -60,8 +65,9 @@ public class CreateListingActivity extends AppCompatActivity {
     EditText mProductInput;
     EditText mPriceInput;
     EditText mUnitInput;
-    EditText mStoreInput;
-    EditText mAddressInput;
+    Button   mInsertLocationbtn;
+    TextView mStoreInput;
+    TextView mAddressInput;
 
     // current image file
     private File mImgFile;
@@ -129,8 +135,9 @@ public class CreateListingActivity extends AppCompatActivity {
         mProductInput = (EditText) findViewById(R.id.productInput);
         mPriceInput = (EditText) findViewById(R.id.priceInput);
         mUnitInput = (EditText) findViewById(R.id.unitInput);
-        mStoreInput = (EditText) findViewById(R.id.storeInput);
-        mAddressInput = (EditText) findViewById(R.id.addressInput);
+        mInsertLocationbtn = (Button) findViewById(R.id.insertLocationbtn);
+        mStoreInput = (TextView) findViewById(R.id.storeInput);
+        mAddressInput = (TextView) findViewById(R.id.addressInput);
 
         // set default unit
         mUnitInput.setText("ea");
@@ -153,34 +160,27 @@ public class CreateListingActivity extends AppCompatActivity {
             }
         });
 
-        // set up the autocomplete intents for address and store
-        mStoreInput.addTextChangedListener(new TextWatcher() {
-
+        // set up the autocomplete intents for store and address
+        mInsertLocationbtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void afterTextChanged(Editable s) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onClick(View view) {
                 try {
-                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(CreateListingActivity.this);
-                    // Intent intent = new Intent(CreateListingActivity.this, GooglePlacesAutocompleteActivity.class);
-                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                    AutocompleteFilter storeFilter = new AutocompleteFilter.Builder()
+                            .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ESTABLISHMENT)
+                            .build();
+
+                    Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                            .setFilter(storeFilter)
+                            .build(CreateListingActivity.this);
+                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE_STORE);
                 } catch (GooglePlayServicesRepairableException e) {
                     // TODO: Handle the error.
                 } catch (GooglePlayServicesNotAvailableException e) {
                     // TODO: Handle the error.
-                } finally {
-                    // TODO: Handle the error
                 }
             }
         });
+
     }
 
     @Override
@@ -203,10 +203,12 @@ public class CreateListingActivity extends AppCompatActivity {
                 mImgFile.delete();
                 mImgFile = null;
             }
-        } else if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+        } else if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE_STORE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                Log.i("...", "Place: " + place.getName());
+                Log.i("...", "Place: " + place.getLatLng());
+                mStoreInput.setText(place.getName());
+                mAddressInput.setText(place.getAddress());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
                 // TODO: Handle the error.
@@ -218,6 +220,13 @@ public class CreateListingActivity extends AppCompatActivity {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * initiates the intent for inserting the location and store name
+     */
+    private void storeFind() {
+
     }
 
     /**
