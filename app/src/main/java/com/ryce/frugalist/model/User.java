@@ -6,4 +6,8 @@ package com.ryce.frugalist.model;
  * Presentation layer user model
  */
 public class User {
+
+    public String facebookID;
+
+    public String name;
 }

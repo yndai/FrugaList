@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.facebook.login.LoginManager;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.view.create.CreateListingActivity;
@@ -93,6 +94,11 @@ public class MainListActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        if(id == R.id.action_logout){
+            UserHelper.userLogout(MainListActivity.this);
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
