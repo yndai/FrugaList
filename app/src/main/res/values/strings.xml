@@ -5,7 +5,7 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_listing_detail"></string>
     <string name="title_activity_login">LoginActivity</string>
-
+    <string name="facebook_app_id">968057826611427</string>
     <string name="picture_not_available">Picture note available</string>
 
     <string name="create_product">Product</string>
