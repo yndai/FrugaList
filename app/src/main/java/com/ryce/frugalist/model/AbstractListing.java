@@ -15,8 +15,8 @@ public abstract class AbstractListing {
     private String product;
     private String imageUrl;
     private String address;
-    private double longitude;
-    private double latitude;
+    private float longitude;
+    private float latitude;
 
     // TODO: these are currently unused!
     // cached image
