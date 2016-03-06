@@ -6,7 +6,8 @@
     <string name="title_activity_listing_detail"></string>
     <string name="title_activity_login">LoginActivity</string>
 
-    <string name="picture_not_available">Picture note available</string>
+    <string name="picture_not_available">Picture not available</string>
+    <string name="insert_location">Insert Location</string>
 
     <string name="create_product">Product</string>
     <string name="create_store">Store</string>
