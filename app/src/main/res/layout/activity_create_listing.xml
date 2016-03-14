@@ -58,7 +58,8 @@
                     android:id="@+id/priceInput"
                     style="@style/DefEditText"
                     android:hint="@string/create_price"
-                    android:inputType="text" />
+                    android:inputType="numberDecimal" />
+
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -69,11 +70,13 @@
                 android:layout_toRightOf="@+id/priceLayout"
                 android:layout_alignParentEnd="true">
 
-                <EditText
-                    android:id="@+id/unitInput"
-                    style="@style/DefEditText"
+                <Spinner
+                    android:id="@+id/unitSpinner"
                     android:hint="@string/create_unit"
-                    android:inputType="text" />
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="17dp" />
+
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -102,7 +105,8 @@
                     android:layout_height="wrap_content"
                     style="@style/DefEditText"
                     android:hint="@string/create_store"
-                    android:inputType="none"/>
+                    android:inputType="none"
+                    android:focusable="false" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -116,7 +120,8 @@
                     android:id="@+id/addressInput"
                     style="@style/DefEditText"
                     android:hint="@string/create_address"
-                    android:inputType="none" />
+                    android:inputType="none"
+                    android:focusable="false" />
 
             </android.support.design.widget.TextInputLayout>
 

@@ -18,4 +18,11 @@
     <string name="create_address">Address</string>
 
 
+    <string-array name="unitArray">
+        <item>/ 100g</item>
+        <item>/ each</item>
+        <item>/ lb</item>
+        <item>/ kg</item>
+    </string-array>
+
 </resources>
