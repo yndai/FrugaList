@@ -2,22 +2,16 @@ package com.ryce.frugalist.view.login;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
@@ -28,9 +22,6 @@ import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.view.list.MainListActivity;
 
 import org.json.JSONObject;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -60,13 +51,15 @@ public class LoginActivity extends AppCompatActivity {
 //        } catch (NoSuchAlgorithmException e) {
 //
 //        }
-        //Initialize facebook SDK
-        FacebookSdk.sdkInitialize(this.getApplicationContext());
+
         setContentView(R.layout.activity_login);
 
         if (UserHelper.getCurrentUser(LoginActivity.this) != null) {
 
             UserHelper.setLoggedIn(true);
+
+            Intent intent = new Intent(this, MainListActivity.class);
+            startActivity(intent);
             finish();
         }
 
@@ -141,6 +134,9 @@ public class LoginActivity extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                             Toast.makeText(LoginActivity.this,"Welcome "+user.name,Toast.LENGTH_LONG).show();
+
+                            Intent intent = new Intent(LoginActivity.this, MainListActivity.class);
+                            startActivity(intent);
                             finish();
 
                         }

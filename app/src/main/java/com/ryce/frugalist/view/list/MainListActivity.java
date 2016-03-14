@@ -4,20 +4,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.facebook.login.LoginManager;
+import com.facebook.FacebookSdk;
 import com.ryce.frugalist.R;
+import com.ryce.frugalist.network.FrugalistResponse;
 import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.view.create.CreateListingActivity;
 import com.ryce.frugalist.view.login.LoginActivity;
+
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainListActivity extends AppCompatActivity {
 
@@ -31,7 +40,37 @@ public class MainListActivity extends AppCompatActivity {
      */
     private ListSectionPagerAdapter mSectionsPagerAdapter;
 
+    // callback for deal list
+    Callback<FrugalistResponse.DealList> mFrugalistDealCallback = new Callback<FrugalistResponse.DealList>() {
+        @Override
+        public void onResponse(
+                Call<FrugalistResponse.DealList> call,
+                Response<FrugalistResponse.DealList> response
+        ) {
 
+            if (response.isSuccess()) {
+
+                FrugalistResponse.DealList deals = response.body();
+                Log.i("FRUGALIST", deals.toString());
+
+            } else {
+
+                try {
+                    Log.i("FRUGALIST", "Error: " + response.errorBody().string());
+                } catch (IOException e) {
+                    // not handling
+                }
+            }
+        }
+
+        @Override
+        public void onFailure(Call<FrugalistResponse.DealList> call, Throwable t) {
+            Log.i("FRUGALIST", "Error: " + t.getMessage());
+            Snackbar.make(findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
+
+    };
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -41,10 +80,22 @@ public class MainListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Initialize facebook SDK
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
+
+        // immediately go to login if not logged in
+        if (UserHelper.getCurrentUser(this) == null) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         setContentView(R.layout.activity_main_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new ListSectionPagerAdapter(getSupportFragmentManager());
@@ -60,19 +111,13 @@ public class MainListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //        .setAction("Action", null).show();
                 Context context = view.getContext();
                 Intent intent = new Intent(context, CreateListingActivity.class);
                 context.startActivity(intent);
             }
         });
 
-        // go to login if not logged in
-        if (!UserHelper.isLoggedIn()) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-        }
+        //FrugalistServiceHelper.getInstance().doGetDealList(this, mFrugalistDealCallback);
 
     }
 

@@ -17,6 +17,8 @@ import com.ryce.frugalist.R;
 
 /**
  * Created by shivand on 2/19/2016.
+ *
+ * TODO: NOT USED
  */
 public class LocationActivity extends Activity implements OnMapReadyCallback {
 
