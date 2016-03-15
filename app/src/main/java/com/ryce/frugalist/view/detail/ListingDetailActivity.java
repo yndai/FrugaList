@@ -59,10 +59,7 @@ public class ListingDetailActivity extends AppCompatActivity {
             // Load image via URL
             Picasso p = Picasso.with(this);
             p.setIndicatorsEnabled(true);
-            p.load(deal.getImageUrl())
-                    .error(android.R.drawable.ic_delete)
-                    .placeholder(R.drawable.loader)
-                    .into(imageView);
+            p.load(deal.getImageUrl()).into(imageView);
 
             // display data
             productText.setText(deal.getProduct());

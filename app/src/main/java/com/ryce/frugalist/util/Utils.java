@@ -2,7 +2,9 @@ package com.ryce.frugalist.util;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -25,6 +27,26 @@ public class Utils {
     private Utils() {
     }
 
+    /**
+     * Show an info dialog with a message
+     * @param context
+     * @param message
+     */
+    public static void showAlertDialog(Context context, String message) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(message);
+        builder.setCancelable(true);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
+    }
+
     // for requesting file read/write permissions (even if we specified it in the manifest!!)
     // http://stackoverflow.com/questions/8854359/exception-open-failed-eacces-permission-denied-on-android
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -35,10 +57,12 @@ public class Utils {
     /**
      * Checks if the app has permission to write to device storage
      * If the app does not has permission then the user will be prompted to grant permissions
+     * Return true if permission accepted by user
      *
      * @param activity
+     * @return
      */
-    public static void verifyStoragePermissions(Activity activity) {
+    public static boolean verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -50,6 +74,10 @@ public class Utils {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
+
+        // check if user has granted permission
+        permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return permission == PackageManager.PERMISSION_GRANTED;
     }
 
     /**

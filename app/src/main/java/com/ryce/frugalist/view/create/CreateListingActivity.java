@@ -1,7 +1,6 @@
 package com.ryce.frugalist.view.create;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -12,11 +11,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,8 +39,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -160,9 +154,12 @@ public class CreateListingActivity extends AppCompatActivity {
         // TODO: get intent extras to determine if we are creating a deal or a freebie!
 
         // make sure we can write to disk
-        // TODO: verify user allowed permission?
-        Utils.verifyStoragePermissions(this);
+        if (!Utils.verifyStoragePermissions(this)) {
+            // user has declined, stop this activity
+            finish();
+        }
 
+        // get references to input widgets
         mPhotoImageView = (ImageView) findViewById(R.id.cameraView);
         mProductInput = (EditText) findViewById(R.id.productInput);
         mPriceInput = (EditText) findViewById(R.id.priceInput);
@@ -172,58 +169,16 @@ public class CreateListingActivity extends AppCompatActivity {
         mAddressInput = (TextView) findViewById(R.id.addressInput);
         mUploadButton = (FloatingActionButton) findViewById(R.id.uploadFab);
 
+        // initialize TextWatcher for price input
+        mPriceInput.addTextChangedListener(new MoneyTextWatcher(mPriceInput));
 
-        // set up formatting for the
-        mPriceInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    try {
-                        String price = mPriceInput.getText().toString();
-                        Double dprice = Double.parseDouble(price);
-
-                        DecimalFormat currency = new DecimalFormat("$ #.##");
-                        currency.setMinimumFractionDigits(2);
-                        mPriceInput.setText(currency.format(dprice));
-                    } catch(NumberFormatException nfe) {
-                        Log.e("CreateListingActivity", "Could not parse price :" + nfe);
-                        mPriceInput.setText(null);
-                    }
-                }
-            }
-        });
-
-        mPriceInput.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                    mPriceInput.clearFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        // set default unit
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.unitArray, android.R.layout.simple_spinner_item); // Create an ArrayAdapter using the string array and a default spinner layout
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // Specify the layout to use when the list of choices appears
-        mUnitSpinner.setAdapter(adapter); // Apply the adapter to the spinner
-
-        mUnitSpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
-            // TODO: implement these!
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int pos, long id) {
-                // An item was selected. You can retrieve the selected item using
-                // parent.getItemAtPosition(pos)
-
-            }
-
-            public void onNothingSelected(AdapterView<?> parent) {
-                // Another interface callback
-            }
-        });
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter =
+                ArrayAdapter.createFromResource(this, R.array.unitArray, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mUnitSpinner.setAdapter(adapter);
 
         // setup listener for camera button
         mPhotoImageView.setOnClickListener(new View.OnClickListener() {
@@ -255,6 +210,7 @@ public class CreateListingActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        // process results from external activities
         if (requestCode == CAPTURE_IMAGE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
 
@@ -332,7 +288,7 @@ public class CreateListingActivity extends AppCompatActivity {
 
             // Create the File where the photo should go
             try {
-                mImgFile = createImageFile();
+                mImgFile = createTempImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
                 ex.printStackTrace();
@@ -354,7 +310,7 @@ public class CreateListingActivity extends AppCompatActivity {
      * @return
      * @throws IOException
      */
-    private File createImageFile() throws IOException {
+    private File createTempImageFile() throws IOException {
 
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -363,9 +319,9 @@ public class CreateListingActivity extends AppCompatActivity {
         // create a temporary image file in DCIM folder
         File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
+                imageFileName,  // prefix
+                ".jpg",         // suffix
+                storageDir      // directory
         );
 
         return image;
@@ -382,7 +338,10 @@ public class CreateListingActivity extends AppCompatActivity {
             request.image = mImgFile;
 
             // start wait dialog
-            mProgressDialog = ProgressDialog.show(parentView.getContext(), "Uploading deal...", "Please wait", true);
+            mProgressDialog = ProgressDialog.show(parentView.getContext(),
+                    getResources().getString(R.string.create_upload_load_title),
+                    getResources().getString(R.string.create_upload_load_msg),
+                    true);
             // do request
             ImgurServiceHelper.getInstance().doPostImage(getBaseContext(), request, mImgurResponseCallback);
 
@@ -410,7 +369,7 @@ public class CreateListingActivity extends AppCompatActivity {
         File newImageFile = null;
         try {
             // create new image file
-            newImageFile = createImageFile();
+            newImageFile = createTempImageFile();
 
             FileOutputStream fos = new FileOutputStream(newImageFile);
 
@@ -448,6 +407,8 @@ public class CreateListingActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        // cleanup image temp files, etc
+        cleanupRequest();
         super.onDestroy();
     }
 

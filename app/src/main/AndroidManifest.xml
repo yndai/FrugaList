@@ -50,7 +50,7 @@
 
         <activity
             android:name=".view.create.CreateListingActivity"
-            android:label="@string/title_activity_display_message"
+            android:label="@string/title_activity_create_listing"
             android:parentActivityName=".view.list.MainListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -70,10 +70,6 @@
             android:name=".view.login.LoginActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 
