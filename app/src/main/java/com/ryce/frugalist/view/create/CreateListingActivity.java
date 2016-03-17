@@ -153,12 +153,6 @@ public class CreateListingActivity extends AppCompatActivity {
 
         // TODO: get intent extras to determine if we are creating a deal or a freebie!
 
-        // make sure we can write to disk
-        if (!Utils.verifyStoragePermissions(this)) {
-            // user has declined, stop this activity
-            finish();
-        }
-
         // get references to input widgets
         mPhotoImageView = (ImageView) findViewById(R.id.cameraView);
         mProductInput = (EditText) findViewById(R.id.productInput);

@@ -1,6 +1,5 @@
 package com.ryce.frugalist.view.login;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +27,6 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private LoginButton mloginButton;
     private TextView btnLogin;
-    private ProgressDialog progressDialog;
     User user;
 
 
@@ -54,36 +52,24 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
+        // TODO: this is redundant, probably
         if (UserHelper.getCurrentUser(LoginActivity.this) != null) {
-
             UserHelper.setLoggedIn(true);
-
             Intent intent = new Intent(this, MainListActivity.class);
             startActivity(intent);
             finish();
         }
 
-    }
+        callbackManager = CallbackManager.Factory.create();
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-
-        callbackManager=CallbackManager.Factory.create();
-
-        mloginButton= (LoginButton)findViewById(R.id.login_button);
-
-        mloginButton.setReadPermissions("public_profile", "email","user_friends");
+        mloginButton = (LoginButton)findViewById(R.id.login_button);
+        mloginButton.setReadPermissions("public_profile", "email");
+        mloginButton.registerCallback(callbackManager, mCallBack);
 
         btnLogin= (TextView) findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                progressDialog = new ProgressDialog(LoginActivity.this);
-                progressDialog.setMessage("Loading...");
-                progressDialog.show();
 
                 mloginButton.performClick();
 
@@ -91,14 +77,18 @@ public class LoginActivity extends AppCompatActivity {
 
                 mloginButton.invalidate();
 
-                mloginButton.registerCallback(callbackManager, mCallBack);
-
                 mloginButton.setPressed(false);
 
                 mloginButton.invalidate();
 
             }
         });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -107,14 +97,10 @@ public class LoginActivity extends AppCompatActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-
     private FacebookCallback<LoginResult> mCallBack = new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResult) {
 
-            progressDialog.dismiss();
-
-            // App code
             GraphRequest request = GraphRequest.newMeRequest(
                     loginResult.getAccessToken(),
                     new GraphRequest.GraphJSONObjectCallback() {
@@ -126,8 +112,8 @@ public class LoginActivity extends AppCompatActivity {
                             Log.e("response: ", response + "");
                             try {
                                 user = new User();
-                                user.facebookID = object.getString("id").toString();
-                                user.name = object.getString("name").toString();
+                                user.facebookID = object.getString("id");
+                                user.name = object.getString("name");
                                 UserHelper.setCurrentUser(user,LoginActivity.this);
                                 UserHelper.setLoggedIn(true);
                             }catch (Exception e){
@@ -138,25 +124,21 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(LoginActivity.this, MainListActivity.class);
                             startActivity(intent);
                             finish();
-
                         }
-
                     });
 
             Bundle parameters = new Bundle();
-            parameters.putString("fields", "id,name,email,gender, birthday");
+            parameters.putString("fields", "id, name, email, gender, birthday");
             request.setParameters(parameters);
             request.executeAsync();
         }
 
         @Override
         public void onCancel() {
-            progressDialog.dismiss();
         }
 
         @Override
         public void onError(FacebookException e) {
-            progressDialog.dismiss();
         }
     };
 

@@ -1,12 +1,16 @@
 package com.ryce.frugalist.view.list;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +22,7 @@ import android.view.View;
 import com.facebook.FacebookSdk;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.network.FrugalistResponse;
+import com.ryce.frugalist.util.LocationHelper;
 import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.view.create.CreateListingActivity;
 import com.ryce.frugalist.view.login.LoginActivity;
@@ -29,6 +34,17 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainListActivity extends AppCompatActivity {
+
+    private static final String TAG = MainListActivity.class.getSimpleName();
+
+    // for requesting permissions
+    private static final int PERMISSIONS_REQUEST = 1;
+    private static final String[] PERMISSIONS = {
+            //Manifest.permission.ACCESS_FINE_LOCATION, // just get coarse location for now
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -51,12 +67,12 @@ public class MainListActivity extends AppCompatActivity {
             if (response.isSuccess()) {
 
                 FrugalistResponse.DealList deals = response.body();
-                Log.i("FRUGALIST", deals.toString());
+                Log.i(TAG, deals.toString());
 
             } else {
 
                 try {
-                    Log.i("FRUGALIST", "Error: " + response.errorBody().string());
+                    Log.i(TAG, "Error: " + response.errorBody().string());
                 } catch (IOException e) {
                     // not handling
                 }
@@ -65,7 +81,7 @@ public class MainListActivity extends AppCompatActivity {
 
         @Override
         public void onFailure(Call<FrugalistResponse.DealList> call, Throwable t) {
-            Log.i("FRUGALIST", "Error: " + t.getMessage());
+            Log.i(TAG, "Error: " + t.getMessage());
             Snackbar.make(findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }
@@ -89,10 +105,13 @@ public class MainListActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
+            return;
         }
 
-        setContentView(R.layout.activity_main_list);
+        // try to get permissions for location and file read/write
+        requestPermissions();
 
+        setContentView(R.layout.activity_main_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -114,6 +133,7 @@ public class MainListActivity extends AppCompatActivity {
                 Context context = view.getContext();
                 Intent intent = new Intent(context, CreateListingActivity.class);
                 context.startActivity(intent);
+                Log.i(TAG, LocationHelper.getInstance(view.getContext()).getLastLocation().toString());
             }
         });
 
@@ -121,6 +141,39 @@ public class MainListActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Make sure we have permissions we need, ask user if needed
+     */
+    private void requestPermissions() {
+        // check if we have location permission
+        int location = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+        int write = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (location != PackageManager.PERMISSION_GRANTED || write != PackageManager.PERMISSION_GRANTED) {
+
+            // ask user for permissions
+            ActivityCompat.requestPermissions(
+                    this,
+                    PERMISSIONS,
+                    PERMISSIONS_REQUEST
+            );
+
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // connect Google Location client
+        LocationHelper.getInstance(this).connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // connect Google Location client
+        LocationHelper.getInstance(this).disconnect();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -149,5 +202,26 @@ public class MainListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST) {
+
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length >= 3
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+
+                // granted, connect Google Location client
+                LocationHelper.getInstance(this).connect();
+
+            } else {
+
+                // boo, close the activity
+                finish();
+                return;
+            }
+        }
+    }
 
 }
