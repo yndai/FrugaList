@@ -57,7 +57,7 @@ public class MainListActivity extends AppCompatActivity {
     private ListSectionPagerAdapter mSectionsPagerAdapter;
 
     // callback for deal list
-    Callback<FrugalistResponse.DealList> mFrugalistDealCallback = new Callback<FrugalistResponse.DealList>() {
+    Callback<FrugalistResponse.DealList> mFrugalistDealListCallback = new Callback<FrugalistResponse.DealList>() {
         @Override
         public void onResponse(
                 Call<FrugalistResponse.DealList> call,
@@ -81,6 +81,38 @@ public class MainListActivity extends AppCompatActivity {
 
         @Override
         public void onFailure(Call<FrugalistResponse.DealList> call, Throwable t) {
+            Log.i(TAG, "Error: " + t.getMessage());
+            Snackbar.make(findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
+
+    };
+
+    // callback for deal
+    Callback<FrugalistResponse.Deal> mFrugalistDealCallback = new Callback<FrugalistResponse.Deal>() {
+        @Override
+        public void onResponse(
+                Call<FrugalistResponse.Deal> call,
+                Response<FrugalistResponse.Deal> response
+        ) {
+
+            if (response.isSuccess()) {
+
+                FrugalistResponse.Deal deal = response.body();
+                Log.i(TAG, deal.toString());
+
+            } else {
+
+                try {
+                    Log.i(TAG, "Error: " + response.errorBody().string());
+                } catch (IOException e) {
+                    // not handling
+                }
+            }
+        }
+
+        @Override
+        public void onFailure(Call<FrugalistResponse.Deal> call, Throwable t) {
             Log.i(TAG, "Error: " + t.getMessage());
             Snackbar.make(findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
@@ -130,6 +162,15 @@ public class MainListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+//                if (LocationHelper.getInstance(MainListActivity.this).isConnected()) {
+//                    Location loc = LocationHelper.getInstance(MainListActivity.this).getLastLocation();
+//                    FrugalistServiceHelper.getInstance().doGetNearbyDealList(
+//                            mFrugalistDealListCallback, (float) loc.getLatitude(), (float) loc.getLongitude(), 5);
+//                }
+//
+//                FrugalistServiceHelper.getInstance().doGetDealById(mFrugalistDealCallback, 5981343255101440L);
+
                 Context context = view.getContext();
                 Intent intent = new Intent(context, CreateListingActivity.class);
                 context.startActivity(intent);
@@ -137,7 +178,7 @@ public class MainListActivity extends AppCompatActivity {
             }
         });
 
-        //FrugalistServiceHelper.getInstance().doGetDealList(this, mFrugalistDealCallback);
+
 
     }
 

@@ -24,8 +24,21 @@ public class FrugalistServiceHelper {
     private FrugalistServiceHelper() {
     }
 
-    // cached service object
+    // service object
     private FrugalistAPI mFrugalistAPI;
+
+    /**
+     * Get deal by id
+     * @param callback
+     * @param id
+     */
+    public void doGetDealById(Callback<FrugalistResponse.Deal> callback, Long id) {
+        // init request
+        Call<FrugalistResponse.Deal> dealCall = getService().getDealById(id);
+
+        // execute request
+        dealCall.enqueue(callback);
+    }
 
     /**
      * Get list of deals
@@ -34,6 +47,7 @@ public class FrugalistServiceHelper {
      */
     public void doGetDealList(Context context, Callback<FrugalistResponse.DealList> callback) {
 
+        // TODO: refactor this elsewhere...
         if (!Utils.isConnected(context)) {
             //Callback will be called, so we prevent a unnecessary notification
             callback.onFailure(null, new Exception("No internet!"));
@@ -42,6 +56,26 @@ public class FrugalistServiceHelper {
 
         // init request
         Call<FrugalistResponse.DealList> dealListCall = getService().listDeals();
+
+        // execute request
+        dealListCall.enqueue(callback);
+    }
+
+    /**
+     * Get list of nearby deals
+     * @param callback
+     * @param latitude
+     * @param longitude
+     * @param radius
+     */
+    public void doGetNearbyDealList(Callback<FrugalistResponse.DealList> callback,
+                                    Float latitude,
+                                    Float longitude,
+                                    Integer radius
+    ) {
+        // init request
+        Call<FrugalistResponse.DealList> dealListCall =
+                getService().listNearestDeals(latitude, longitude, radius);
 
         // execute request
         dealListCall.enqueue(callback);
