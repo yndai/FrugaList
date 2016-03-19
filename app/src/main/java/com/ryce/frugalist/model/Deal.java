@@ -46,11 +46,11 @@ public class Deal extends AbstractListing {
     }
 
     public String getFormattedRating() {
-        return (rating >= 0 ? "+" : "-") + rating;
+        return (rating >= 0 ? "+" : "") + rating;
     }
 
     public int getRatingColour() {
-        return (rating >= 0 ? Color.GREEN : Color.RED);
+        return (rating >= 0 ? Color.rgb(0, 120, 0) : Color.RED);
     }
 
 }

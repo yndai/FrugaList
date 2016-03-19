@@ -14,7 +14,6 @@ import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.Deal;
 import com.ryce.frugalist.model.MockDatastore;
-import com.ryce.frugalist.util.Utils;
 import com.ryce.frugalist.view.detail.ListingDetailActivity;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
 import com.ryce.frugalist.view.list.ListSectionPagerAdapter.ListSection;
@@ -88,8 +87,8 @@ public class ListSectionRecyclerAdapter
             // note we get height of picture frame (in pixels)
             int height = (int) mContext.getResources().getDimension(R.dimen.list_item_height);
             Picasso p = Picasso.with(dealHolder.mView.getContext());
-            p.setIndicatorsEnabled(true);
-            p.load(deal.getImageUrl())
+            //p.setIndicatorsEnabled(true);
+            p.load(deal.getThumbnailUrl())
                     .error(android.R.drawable.ic_delete)
                     .resize(height, height)
                     .placeholder(R.drawable.loader)
@@ -125,7 +124,7 @@ public class ListSectionRecyclerAdapter
             });
 
         } else if (mItemType == ListingType.FREEBIE) {
-            //TODO: not built yet
+            //TODO: not handling
         }
 
 
@@ -175,15 +174,18 @@ public class ListSectionRecyclerAdapter
         }
 
         @Override
-        public String toString() { return super.toString() + " '" + mDeal.getProduct() + "'"; }
+        public String toString() {
+            return super.toString() + " '" + mDeal.getProduct() + "'";
+        }
     }
 
     /**
      * Stores the view layout for a freebie list item
+     *
+     * TODO: Not used
      */
     public class FreebieViewHolder extends RecyclerView.ViewHolder {
 
-        // TODO: not valid ATM, still need to decide on freebie item layout
         public final View mView;
         public final TextView mDealTextView;
         public final TextView mPriceTextView;

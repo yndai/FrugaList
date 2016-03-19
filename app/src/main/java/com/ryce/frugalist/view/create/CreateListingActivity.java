@@ -147,12 +147,6 @@ public class CreateListingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_listing);
 
-        if (savedInstanceState == null) {
-            //getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
-        }
-
-        // TODO: get intent extras to determine if we are creating a deal or a freebie!
-
         // get references to input widgets
         mPhotoImageView = (ImageView) findViewById(R.id.cameraView);
         mProductInput = (EditText) findViewById(R.id.productInput);

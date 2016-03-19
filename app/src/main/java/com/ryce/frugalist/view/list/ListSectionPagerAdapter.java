@@ -17,7 +17,7 @@ public class ListSectionPagerAdapter extends FragmentStatePagerAdapter {
      * Enum of section types
      */
     public enum ListSection {
-        NEARBY(0), FREEBIES(1), POSTED(2), SAVED(3);
+        NEARBY(0), POSTED(1), SAVED(2);
         int val;
         ListSection(int val) { this.val = val; }
         public int toInteger() { return val; }
@@ -27,17 +27,20 @@ public class ListSectionPagerAdapter extends FragmentStatePagerAdapter {
         super(fm);
     }
 
+    /**
+     * Called to instantiate the fragment for the given page.
+     * @param position
+     * @return
+     */
     @Override
     public Fragment getItem(int position) {
-        // getItem is called to instantiate the fragment for the given page.
-
         int sectionNumber = ListSection.values()[position].toInteger();
         return ListSectionFragment.newInstance(sectionNumber);
     }
 
     @Override
     public int getCount() {
-        return 4;
+        return 3;
     }
 
     @Override
@@ -45,11 +48,11 @@ public class ListSectionPagerAdapter extends FragmentStatePagerAdapter {
         switch (position) {
             case 0:
                 return "Near Me";
+//            case 1:
+//                return "Freebies";
             case 1:
-                return "Freebies";
-            case 2:
                 return "Posted";
-            case 3:
+            case 2:
                 return "Saved";
         }
         return null;

@@ -20,8 +20,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ImgurServiceHelper {
 
-    public static final String IMGUR_CLIENT_ID = "c09bf20a6cf8625";
-    public static final MediaType IMAGE_MEDIA_TYPE = MediaType.parse("image/*");
+    private static final String IMGUR_CLIENT_ID = "Client-ID c09bf20a6cf8625";
+    private static final MediaType IMAGE_MEDIA_TYPE = MediaType.parse("image/*");
 
     private static ImgurServiceHelper ourInstance = new ImgurServiceHelper();
     public static ImgurServiceHelper getInstance() {
@@ -53,7 +53,7 @@ public class ImgurServiceHelper {
         // init request
         Call<ImgurResponse> imagePostCall =
                 ServiceGenerator.createService(ImgurAPI.class).postImage(
-                    getClientAuth(),
+                    IMGUR_CLIENT_ID,
                     request.title,
                     request.description,
                     request.albumId,
@@ -63,10 +63,6 @@ public class ImgurServiceHelper {
 
         // execute request
         imagePostCall.enqueue(callback);
-    }
-
-    private static String getClientAuth() {
-        return "Client-ID " + IMGUR_CLIENT_ID;
     }
 
     private static class ServiceGenerator {

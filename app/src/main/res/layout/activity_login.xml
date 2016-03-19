@@ -12,26 +12,27 @@
         android:layout_height="match_parent"
         android:background="#ffffff">
 
-        <TextView
-            android:text="Login With Facebook"
-            android:id="@+id/btnLogin"
-            android:padding="16dp"
-            android:background="#494949"
-            android:textColor="#fff"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/textView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="80dp" />
+        <!--<TextView-->
+            <!--android:text="Login With Facebook"-->
+            <!--android:id="@+id/btnLogin"-->
+            <!--android:padding="16dp"-->
+            <!--android:background="#33691e"-->
+            <!--android:textColor="#fff"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/textView"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:layout_marginTop="80dp" />-->
 
         <com.facebook.login.widget.LoginButton
-            android:visibility="gone"
+
             android:id="@+id/login_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="30dp" />
+            android:layout_marginTop="95dp"
+            android:layout_below="@+id/textView"
+            android:layout_centerHorizontal="true" />
         <!--<Button-->
             <!--android:layout_width="wrap_content"-->
             <!--android:layout_height="wrap_content"-->

@@ -16,27 +16,29 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class FrugalistServiceHelper {
 
-    private static FrugalistServiceHelper ourInstance = new FrugalistServiceHelper();
-    public static FrugalistServiceHelper getInstance() {
-        return ourInstance;
-    }
+    /** NO ONE expects this secret key! */
+    private static final String FRUGALIST_CLIENT_ID = "Client-ID thespanishinquisition";
+
     // disallow instantiation
     private FrugalistServiceHelper() {
     }
 
     // service object
-    private FrugalistAPI mFrugalistAPI;
+    private static FrugalistAPI mFrugalistAPI;
+
+    /****************************************************************************
+     * DEAL SERVICES
+     ****************************************************************************/
 
     /**
      * Get deal by id
      * @param callback
      * @param id
      */
-    public void doGetDealById(Callback<FrugalistResponse.Deal> callback, Long id) {
-        // init request
+    public static void doGetDealById(Callback<FrugalistResponse.Deal> callback, Long id) {
+
         Call<FrugalistResponse.Deal> dealCall = getService().getDealById(id);
 
-        // execute request
         dealCall.enqueue(callback);
     }
 
@@ -45,7 +47,7 @@ public class FrugalistServiceHelper {
      * @param context
      * @param callback
      */
-    public void doGetDealList(Context context, Callback<FrugalistResponse.DealList> callback) {
+    public static void doGetDealList(Context context, Callback<FrugalistResponse.DealList> callback) {
 
         // TODO: refactor this elsewhere...
         if (!Utils.isConnected(context)) {
@@ -54,10 +56,8 @@ public class FrugalistServiceHelper {
             return;
         }
 
-        // init request
         Call<FrugalistResponse.DealList> dealListCall = getService().listDeals();
 
-        // execute request
         dealListCall.enqueue(callback);
     }
 
@@ -68,24 +68,37 @@ public class FrugalistServiceHelper {
      * @param longitude
      * @param radius
      */
-    public void doGetNearbyDealList(Callback<FrugalistResponse.DealList> callback,
+    public static void doGetNearbyDealList(Callback<FrugalistResponse.DealList> callback,
                                     Float latitude,
                                     Float longitude,
                                     Integer radius
     ) {
-        // init request
         Call<FrugalistResponse.DealList> dealListCall =
                 getService().listNearestDeals(latitude, longitude, radius);
 
-        // execute request
         dealListCall.enqueue(callback);
     }
 
-    /**
-     * Convienice getter
-     * @return
-     */
-    private FrugalistAPI getService() {
+
+    /****************************************************************************
+     * USER SERVICES
+     ****************************************************************************/
+
+    public static void doGetOrCreateUser(Callback<FrugalistResponse.User> callback,
+                                  String id,
+                                  String name
+    ) {
+        Call<FrugalistResponse.User> userCall =
+                getService().getUserOrCreate(id, name);
+
+        userCall.enqueue(callback);
+    }
+
+    /****************************************************************************
+     * HELPERS
+     ****************************************************************************/
+
+    private static FrugalistAPI getService() {
         if (mFrugalistAPI == null) {
             mFrugalistAPI = ServiceGenerator.createService(FrugalistAPI.class);
         }

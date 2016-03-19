@@ -41,8 +41,8 @@ public class FrugalistResponse {
     }
 
     public class User {
-        String id;
-        String name;
-        Set<Long> bookmarks;
+        public String id;
+        public String name;
+        public Set<Long> bookmarks;
     }
 }

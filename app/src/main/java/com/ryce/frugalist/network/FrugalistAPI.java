@@ -178,14 +178,16 @@ public interface FrugalistAPI {
      ****************************************/
 
     /**
-     * Get a user by id
+     * Get a user by id (or create if does not exist)
      *
      * @param id
+     * @param name
      * @return
      */
-    @GET("user")
-    Call<FrugalistResponse.User> getUserById(
-            @Query("id") String id
+    @GET("user/getOrCreate")
+    Call<FrugalistResponse.User> getUserOrCreate(
+            @Query("id") String id,
+            @Query("name") String name
     );
 
     /****************************************

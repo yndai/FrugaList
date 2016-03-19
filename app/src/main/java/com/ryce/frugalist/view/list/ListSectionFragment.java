@@ -64,7 +64,9 @@ public class ListSectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main_list, container, false);
+
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.mainListView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         // get section number
         int listSection = getArguments().getInt(ARG_SECTION_NUMBER);
@@ -72,11 +74,6 @@ public class ListSectionFragment extends Fragment {
 
         // TODO: only display for nearby for now...
         if (listSection == ListSection.NEARBY.toInteger()) {
-
-            // use a linear layout manager
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-            recyclerView.setLayoutManager(layoutManager);
-
 
             List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getDeals().values());
 
@@ -87,12 +84,18 @@ public class ListSectionFragment extends Fragment {
 
             return rootView;
 
+        } else if (listSection == ListSection.POSTED.toInteger()) {
+
+            List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getBookmarks().values());
+
+            mListAdapter = new ListSectionRecyclerAdapter(getContext(), items, ListingType.DEAL, mListSection);
+            MockDatastore.getInstance().addBookmarksListener(mListAdapter);
+            recyclerView.setAdapter(mListAdapter);
+            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null, false, true));
+
+            return rootView;
+
         } else if (listSection == ListSection.SAVED.toInteger()) {
-
-            // use a linear layout manager
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-            recyclerView.setLayoutManager(layoutManager);
-
 
             List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getBookmarks().values());
 
