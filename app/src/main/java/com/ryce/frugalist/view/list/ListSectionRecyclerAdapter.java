@@ -30,7 +30,7 @@ public class ListSectionRecyclerAdapter
         extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final Context mContext;
-    private final List<AbstractListing> mItems;
+    private List<AbstractListing> mItems;
     private final ListingType mItemType;
     private final ListSection mListSection;
 
@@ -51,19 +51,21 @@ public class ListSectionRecyclerAdapter
                     .inflate(R.layout.main_list_item_deal, parent, false);
             return new DealViewHolder(view);
 
-        } else if (viewType == ListingType.FREEBIE.toInteger()) {
-
-            // TODO: layout not supported now
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.main_list_item_deal, parent, false);
-            return new FreebieViewHolder(view);
-
-        } else {
+        }
+//        else if (viewType == ListingType.FREEBIE.toInteger()) {
+//
+//            // TODO: layout not supported now
+//            View view = LayoutInflater.from(parent.getContext())
+//                    .inflate(R.layout.main_list_item_deal, parent, false);
+//            return new FreebieViewHolder(view);
+//
+//        }
+        else {
 
             // TODO: what is the default ??
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.main_list_item_deal, parent, false);
-            return new FreebieViewHolder(view);
+            return new DealViewHolder(view);
 
         }
 
@@ -84,26 +86,29 @@ public class ListSectionRecyclerAdapter
             dealHolder.mRatingTextView.setTextColor(deal.getRatingColour());
 
             // load image via URL
-            // note we get height of picture frame (in pixels)
-            int height = (int) mContext.getResources().getDimension(R.dimen.list_item_height);
+            // note: we get height of picture frame (in pixels)
+            final int imgHeight = (int) mContext.getResources().getDimension(R.dimen.list_item_height);
             Picasso p = Picasso.with(dealHolder.mView.getContext());
             //p.setIndicatorsEnabled(true);
             p.load(deal.getThumbnailUrl())
                     .error(android.R.drawable.ic_delete)
-                    .resize(height, height)
+                    .resize(imgHeight, imgHeight)
                     .placeholder(R.drawable.loader)
                     .into(dealHolder.mImageView);
 
+            // on click, go to details view
             dealHolder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Context context = v.getContext();
                     Intent intent = new Intent(context, ListingDetailActivity.class);
                     intent.putExtra(ListingDetailActivity.ARG_LISTING_TYPE, mItemType);
-                    intent.putExtra(ListingDetailActivity.ARG_LISTING_DATA, deal.getId());
+                    intent.putExtra(ListingDetailActivity.ARG_LISTING_ID, deal.getId());
                     context.startActivity(intent);
                 }
             });
+
+            // on long click, add bookmark
             dealHolder.mView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -123,10 +128,7 @@ public class ListSectionRecyclerAdapter
                 }
             });
 
-        } else if (mItemType == ListingType.FREEBIE) {
-            //TODO: not handling
         }
-
 
     }
 
@@ -138,6 +140,21 @@ public class ListSectionRecyclerAdapter
     @Override
     public int getItemViewType(int position) {
         return mItemType.toInteger();
+    }
+
+    /**
+     * Replace data in the list
+     * @param list
+     */
+    public void replaceData(List<AbstractListing> list){
+        if (mItems != null) {
+            mItems.clear();
+            mItems.addAll(list);
+        }
+        else {
+            mItems = list;
+        }
+        notifyDataSetChanged();
     }
 
     public void addItem(Deal deal) {
@@ -181,7 +198,6 @@ public class ListSectionRecyclerAdapter
 
     /**
      * Stores the view layout for a freebie list item
-     *
      * TODO: Not used
      */
     public class FreebieViewHolder extends RecyclerView.ViewHolder {

@@ -1,5 +1,6 @@
 package com.ryce.frugalist.view.detail;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,20 +18,36 @@ import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.Deal;
 import com.ryce.frugalist.model.MockDatastore;
+import com.ryce.frugalist.network.FrugalistResponse;
+import com.ryce.frugalist.network.FrugalistServiceHelper;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.UUID;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ListingDetailActivity extends AppCompatActivity {
 
+    private static final String TAG = ListingDetailActivity.class.getSimpleName();
+
     public static final String ARG_LISTING_TYPE = "listing_type";
-    public static final String ARG_LISTING_DATA = "listing_data";
+    public static final String ARG_LISTING_ID = "listing_id";
 
     private ListingType mType;
     private AbstractListing mListing;
+
+    ImageView mImageView;
+    TextView mProductText;
+    TextView mPriceText;
+    TextView mStoreText;
+    TextView mRatingText;
+    TextView mAddressText;
+    ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +56,17 @@ public class ListingDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // init progress dialog
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage(getResources().getString(R.string.dialog_loading));
+
         // get views
-        final ImageView imageView = (ImageView) findViewById(R.id.detailImage);
-        final TextView productText = (TextView) findViewById(R.id.productText);
-        final TextView priceText = (TextView) findViewById(R.id.priceText);
-        final TextView storeText = (TextView) findViewById(R.id.storeNameText);
-        final TextView ratingText = (TextView) findViewById(R.id.ratingText);
-        final TextView addressText = (TextView) findViewById(R.id.storeAddressText);
+        mImageView = (ImageView) findViewById(R.id.detailImage);
+        mProductText = (TextView) findViewById(R.id.productText);
+        mPriceText = (TextView) findViewById(R.id.priceText);
+        mStoreText = (TextView) findViewById(R.id.storeNameText);
+        mRatingText = (TextView) findViewById(R.id.ratingText);
+        mAddressText = (TextView) findViewById(R.id.storeAddressText);
 
         // get type of listing we are displaying
         mType = (ListingType) getIntent().getExtras().get(ARG_LISTING_TYPE);
@@ -52,22 +74,28 @@ public class ListingDetailActivity extends AppCompatActivity {
         if (mType == ListingType.DEAL) {
 
             // fetch deal by id
-            UUID id = (UUID) getIntent().getExtras().get(ARG_LISTING_DATA);
-            mListing = MockDatastore.getInstance().getDeal(id);
-            final Deal deal = (Deal) mListing;
+            //UUID id = (UUID) getIntent().getExtras().get(ARG_LISTING_ID);
+            Long id = (Long) getIntent().getExtras().get(ARG_LISTING_ID);
 
-            // Load image via URL
-            Picasso p = Picasso.with(this);
-            p.setIndicatorsEnabled(true);
-            p.load(deal.getImageUrl()).into(imageView);
+            // fetch deal by id
+            executeFetchDeal(id);
+            mProgressDialog.show();
 
-            // display data
-            productText.setText(deal.getProduct());
-            priceText.setText(deal.getFormattedPrice());
-            storeText.setText(deal.getStore());
-            addressText.setText(deal.getAddress());
-            ratingText.setText(deal.getFormattedRating());
-            ratingText.setTextColor(deal.getRatingColour());
+//            mListing = MockDatastore.getInstance().getDeal(id);
+//            final Deal deal = (Deal) mListing;
+//
+//            // Load image via URL
+//            Picasso p = Picasso.with(this);
+//            p.setIndicatorsEnabled(true);
+//            p.load(deal.getImageUrl()).into(mImageView);
+//
+//            // display data
+//            mProductText.setText(deal.getProduct());
+//            mPriceText.setText(deal.getFormattedPrice());
+//            mStoreText.setText(deal.getStore());
+//            mAddressText.setText(deal.getAddress());
+//            mRatingText.setText(deal.getFormattedRating());
+//            mRatingText.setTextColor(deal.getRatingColour());
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabBookmark);
@@ -115,4 +143,65 @@ public class ListingDetailActivity extends AppCompatActivity {
         }
         return intent;
     }
+
+    /**
+     * Fetch deal by id
+     * @param id
+     */
+    private void executeFetchDeal(Long id) {
+        FrugalistServiceHelper.doGetDealById(mFrugalistDealCallback, id);
+    }
+
+    private void onFetchDealComplete(FrugalistResponse.Deal resDeal) {
+        Deal deal = new Deal(resDeal);
+        mListing = deal;
+
+        // Load image via URL
+        Picasso p = Picasso.with(this);
+        //p.setIndicatorsEnabled(true);
+        p.load(deal.getImageUrl()).into(mImageView);
+
+        // display data
+        mProductText.setText(deal.getProduct());
+        mPriceText.setText(deal.getFormattedPrice());
+        mStoreText.setText(deal.getStore());
+        mAddressText.setText(deal.getAddress());
+        mRatingText.setText(deal.getFormattedRating());
+        mRatingText.setTextColor(deal.getRatingColour());
+
+    }
+
+    // callback for deal
+    Callback<FrugalistResponse.Deal> mFrugalistDealCallback = new Callback<FrugalistResponse.Deal>() {
+        @Override
+        public void onResponse(
+                Call<FrugalistResponse.Deal> call,
+                Response<FrugalistResponse.Deal> response
+        ) {
+
+            if (response.isSuccess()) {
+
+                FrugalistResponse.Deal deal = response.body();
+                Log.i(TAG, deal.toString());
+                onFetchDealComplete(deal);
+
+            } else {
+                try {
+                    Log.i(TAG, "Error: " + response.errorBody().string());
+                } catch (IOException e) {/* not handling */}
+            }
+
+            mProgressDialog.dismiss();
+        }
+
+        @Override
+        public void onFailure(Call<FrugalistResponse.Deal> call, Throwable t) {
+            Log.i(TAG, "Error: " + t.getMessage());
+            Snackbar.make(findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+
+            mProgressDialog.dismiss();
+        }
+
+    };
 }

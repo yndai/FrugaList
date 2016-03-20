@@ -114,7 +114,8 @@
                 android:id="@+id/addressLayout"
                 style="@style/DefTextInputLayout"
                 android:layout_below="@+id/storeLayout"
-                android:layout_centerVertical="true">
+                android:layout_centerVertical="true"
+                android:paddingBottom="80dp">
 
                 <TextView
                     android:id="@+id/addressInput"

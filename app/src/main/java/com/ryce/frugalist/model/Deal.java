@@ -2,6 +2,13 @@ package com.ryce.frugalist.model;
 
 import android.graphics.Color;
 
+import com.ryce.frugalist.network.FrugalistResponse;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by Tony on 2016-02-06.
  *
@@ -13,6 +20,30 @@ public class Deal extends AbstractListing {
     private String unit;
     private String store;
     private Integer rating;
+    private Map<String, Boolean> votes;
+    private String description;
+
+    public Deal(Long id, String product, String authorId, String imageUrl, String address,
+                Float latitude, Float longitude, String price, String unit, String store,
+                Integer rating, Date created, String description) {
+        super(id, authorId, created, product, address, latitude, longitude, imageUrl);
+        this.price = price;
+        this.unit = unit;
+        this.store = store;
+        this.rating = rating;
+        this.description = description;
+    }
+
+    public Deal(FrugalistResponse.Deal deal) {
+        super(deal.id, deal.author, deal.created, deal.product, deal.address,
+                deal.location.latitude, deal.location.longitude, deal.imageUrl);
+        this.price = deal.price;
+        this.unit = deal.unit;
+        this.store = deal.store;
+        this.rating = deal.rating;
+        this.votes = deal.votes;
+        this.description = deal.description;
+    }
 
     public Deal(String imageUrl, String price, String product,
                 Integer rating, String unit, String store, String address) {
@@ -39,7 +70,9 @@ public class Deal extends AbstractListing {
         return store;
     }
 
-    // convenience methods
+    /****************************************
+     * CONVENIENCE METHODS
+     ****************************************/
 
     public String getFormattedPrice() {
         return "$" + price + "/" + unit;
@@ -50,7 +83,21 @@ public class Deal extends AbstractListing {
     }
 
     public int getRatingColour() {
-        return (rating >= 0 ? Color.rgb(0, 120, 0) : Color.RED);
+        return (rating >= 0 ? Color.rgb(0, 150, 0) : Color.RED);
+    }
+
+    /**
+     * Convenience method to create a list of view model Deal objects from a list of response deal
+     * objects
+     * @param resDealList
+     * @return
+     */
+    public static List<AbstractListing> getDealListFromResponseList(FrugalistResponse.DealList resDealList) {
+        List<AbstractListing> dealList = new ArrayList<>(resDealList.items.size());
+        for (FrugalistResponse.Deal resDeal : resDealList.items) {
+            dealList.add(new Deal(resDeal));
+        }
+        return dealList;
     }
 
 }

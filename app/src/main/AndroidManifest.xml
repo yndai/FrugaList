@@ -67,9 +67,13 @@
             android:label="@string/app_name">
         </activity>
 
-        <activity android:name=".view.search.SearchListingActivity"
-                  android:label="@string/title_activity_search"
-                  android:parentActivityName=".view.list.MainListActivity">
+        <activity
+            android:name=".view.search.SearchListingActivity"
+            android:label="@string/title_activity_search"
+            android:parentActivityName=".view.list.MainListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ryce.frugalist.view.list.MainListActivity" />
         </activity>
 
         <activity

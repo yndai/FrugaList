@@ -1,34 +1,46 @@
 package com.ryce.frugalist.view.list;
 
+import android.app.ProgressDialog;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
+import com.ryce.frugalist.model.Deal;
 import com.ryce.frugalist.model.MockDatastore;
+import com.ryce.frugalist.network.FrugalistResponse;
+import com.ryce.frugalist.network.FrugalistServiceHelper;
+import com.ryce.frugalist.util.LocationHelper;
+import com.ryce.frugalist.util.Utils;
 import com.ryce.frugalist.view.list.ListSectionPagerAdapter.ListSection;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Tony on 2016-02-06.
  *
  * Fragment containing a list section
  */
-public class ListSectionFragment extends Fragment {
+public class ListSectionFragment extends Fragment implements LocationHelper.LocationReadyListener {
 
-    public static final int THUMBNAIL_HEIGHT = 80;
-    public static final int THUMBNAIL_WIDTH = 80;
+    private static final String TAG = ListSectionFragment.class.getSimpleName();
 
-    /**
-     * Enum of listing types
-     */
+    /** Enum of listing types */
     public enum ListingType {
         NONE(-1), DEAL(0), FREEBIE(1);
         int val;
@@ -36,14 +48,14 @@ public class ListSectionFragment extends Fragment {
         public int toInteger() { return val; }
     }
 
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
+    /** The fragment argument representing the section number for this fragment */
     public static final String ARG_SECTION_NUMBER = "section_number";
 
     private ListSection mListSection;
+    private RecyclerView mRecyclerView;
     private ListSectionRecyclerAdapter mListAdapter;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private ProgressDialog mProgressDialog;
 
     public ListSectionFragment() {
     }
@@ -65,49 +77,86 @@ public class ListSectionFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main_list, container, false);
 
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.mainListView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        // get swipe refresh layout and set refresh listener
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshContainer);
 
         // get section number
         int listSection = getArguments().getInt(ARG_SECTION_NUMBER);
         mListSection = ListSection.values()[listSection];
 
-        // TODO: only display for nearby for now...
-        if (listSection == ListSection.NEARBY.toInteger()) {
+        // init recycler view
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.mainListView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null, false, true));
 
-            List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getDeals().values());
+        // init recycler view adapter
+        mListAdapter = new ListSectionRecyclerAdapter(getContext(), new ArrayList<AbstractListing>(), ListingType.DEAL, mListSection);
+        mRecyclerView.setAdapter(mListAdapter);
 
-            mListAdapter = new ListSectionRecyclerAdapter(getContext(), items, ListingType.DEAL, mListSection);
-            MockDatastore.getInstance().addDealsListener(mListAdapter);
-            recyclerView.setAdapter(mListAdapter);
-            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null, false, true));
+        // init progress dialog
+        mProgressDialog = new ProgressDialog(getContext());
+        mProgressDialog.setMessage(getResources().getString(R.string.dialog_loading));
 
+        // TODO: find a good way to handle this...
+        if (!Utils.isConnected(getContext())) {
+            Log.i(TAG, "No internet!");
             return rootView;
+        }
 
-        } else if (listSection == ListSection.POSTED.toInteger()) {
+        // determine the List section type
+        if (mListSection == ListSection.NEARBY) {
+
+            // set refresh listener
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    executeFetchDealList();
+                }
+            });
+
+//            List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getDeals().values());
+//
+//            mListAdapter = new ListSectionRecyclerAdapter(getContext(), items, ListingType.DEAL, mListSection);
+//            MockDatastore.getInstance().addDealsListener(mListAdapter);
+//            recyclerView.setAdapter(mListAdapter);
+
+        } else if (mListSection == ListSection.POSTED) {
 
             List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getBookmarks().values());
 
             mListAdapter = new ListSectionRecyclerAdapter(getContext(), items, ListingType.DEAL, mListSection);
             MockDatastore.getInstance().addBookmarksListener(mListAdapter);
-            recyclerView.setAdapter(mListAdapter);
-            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null, false, true));
+            mRecyclerView.setAdapter(mListAdapter);
 
-            return rootView;
-
-        } else if (listSection == ListSection.SAVED.toInteger()) {
+        } else if (mListSection == ListSection.SAVED) {
 
             List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getBookmarks().values());
 
             mListAdapter = new ListSectionRecyclerAdapter(getContext(), items, ListingType.DEAL, mListSection);
             MockDatastore.getInstance().addBookmarksListener(mListAdapter);
-            recyclerView.setAdapter(mListAdapter);
-            recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null, false, true));
+            mRecyclerView.setAdapter(mListAdapter);
 
-            return rootView;
+        }
 
-        } else {
-            return rootView;
+        // listen to location ready
+        LocationHelper.getInstance().listenToLocation(this);
+
+        return rootView;
+    }
+
+    @Override
+    public void onLocationReady(Location location) {
+
+        if (mListSection == ListSection.NEARBY) {
+
+            executeFetchDealList();
+            mProgressDialog.show();
+
+        } else if (mListSection == ListSection.POSTED) {
+
+
+        } else if (mListSection == ListSection.SAVED) {
+
         }
     }
 
@@ -120,4 +169,73 @@ public class ListSectionFragment extends Fragment {
             MockDatastore.getInstance().removeBookmarksListener(mListAdapter);
         }
     }
+
+    /**
+     * Fetch deal list
+     */
+    private void executeFetchDealList() {
+
+        // get current location
+        Location loc = LocationHelper.getInstance().getLastLocation();
+
+        // if location not available, just get all deals
+        if (loc != null) {
+            FrugalistServiceHelper.doGetNearbyDealList(mFrugalistDealListCallback,
+                    (float) loc.getLatitude(), (float) loc.getLongitude(), /* TODO: HARD CODED! */5);
+        } else {
+            FrugalistServiceHelper.doGetDealList(mFrugalistDealListCallback);
+        }
+    }
+
+    /**
+     * Called after deal list response arrives
+     * @param dealList
+     */
+    private void onDealListFetchComplete(FrugalistResponse.DealList dealList) {
+        // convert response Deal items to view model Deal list
+        List<AbstractListing> newDealList = Deal.getDealListFromResponseList(dealList);
+
+        // replace data in recycler view
+        mListAdapter.replaceData(newDealList);
+
+    }
+
+    /** callback for deal list */
+    Callback<FrugalistResponse.DealList> mFrugalistDealListCallback = new Callback<FrugalistResponse.DealList>() {
+
+        @Override
+        public void onResponse(
+                Call<FrugalistResponse.DealList> call,
+                Response<FrugalistResponse.DealList> response
+        ) {
+            if (response.isSuccess()) {
+
+                FrugalistResponse.DealList deals = response.body();
+                Log.i(TAG, deals.toString());
+                onDealListFetchComplete(deals);
+
+            } else {
+                try {
+                    Log.i(TAG, "Error: " + response.errorBody().string());
+                } catch (IOException e) {/* not handling */}
+            }
+
+            // finish refreshing
+            mSwipeRefreshLayout.setRefreshing(false);
+            mProgressDialog.dismiss();
+        }
+
+        @Override
+        public void onFailure(Call<FrugalistResponse.DealList> call, Throwable t) {
+            Log.i(TAG, "Error: " + t.getMessage());
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+
+            // finish refreshing
+            mSwipeRefreshLayout.setRefreshing(false);
+            mProgressDialog.dismiss();
+        }
+
+    };
+
 }

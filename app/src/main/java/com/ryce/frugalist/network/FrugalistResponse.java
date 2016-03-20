@@ -23,6 +23,7 @@ public class FrugalistResponse {
         public String author;
         public String imageUrl;
         public String store;
+        public String address;
         public GeoPt location;
         public String description;
     }

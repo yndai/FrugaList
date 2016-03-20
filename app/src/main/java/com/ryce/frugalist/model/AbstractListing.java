@@ -1,5 +1,6 @@
 package com.ryce.frugalist.model;
 
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -9,7 +10,10 @@ import java.util.UUID;
  */
 public abstract class AbstractListing {
 
-    private UUID id;
+    private UUID uuid;
+    private Long id;
+    private String authorId;
+    private Date created;
     private String product;
     private String imageUrl;
     private String thumbnailUrl;
@@ -17,8 +21,21 @@ public abstract class AbstractListing {
     private float longitude;
     private float latitude;
 
+    public AbstractListing(Long id, String authorId, Date created, String product, String address, float latitude, float longitude, String imageUrl) {
+        this.id = id;
+        this.authorId = authorId;
+        this.created = created;
+        this.product = product;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.imageUrl = imageUrl;
+        // insert 's' after image ID to get Imgur thumbnail
+        thumbnailUrl = new StringBuilder(imageUrl).insert(imageUrl.lastIndexOf("."), "s").toString();
+    }
+
     public AbstractListing(String imageUrl, String product, String address) {
-        id = UUID.randomUUID();
+        uuid = UUID.randomUUID();
         this.imageUrl = imageUrl;
         this.product = product;
         this.address = address;
@@ -26,26 +43,44 @@ public abstract class AbstractListing {
         thumbnailUrl = new StringBuilder(imageUrl).insert(imageUrl.lastIndexOf("."), "s").toString();
     }
 
-    public UUID getId() {
+    public String getAddress() {
+        return address;
+    }
+
+    public Long getId() {
         return id;
+    }
+
+    public String getAuthorId() {
+        return authorId;
+    }
+
+    public Date getCreated() {
+        return created;
     }
 
     public String getImageUrl() {
         return imageUrl;
     }
 
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
+    public float getLatitude() {
+        return latitude;
     }
 
-    public String getAddress() {
-        return address;
+    public float getLongitude() {
+        return longitude;
     }
 
     public String getProduct() {
         return product;
     }
 
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
 
+    public UUID getUuid() {
+        return uuid;
+    }
 
 }

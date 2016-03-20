@@ -12,6 +12,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * A helper for retrieving location information
  *
@@ -32,12 +35,18 @@ public class LocationHelper {
     /**
      * Note: we need context to verify location permissions when first initialized
      * @param context
-     * @return
      */
-    public static synchronized LocationHelper getInstance(Context context) {
+    public static synchronized void initInstance(Context context) {
         if (ourInstance == null) {
             ourInstance = new LocationHelper(context);
         }
+    }
+
+    /**
+     * Note: may return null if initInstance has not been called...
+     * @return
+     */
+    public static synchronized LocationHelper getInstance() {
         return ourInstance;
     }
 
@@ -47,11 +56,37 @@ public class LocationHelper {
     public void connect() {
         mGoogleApiWrapper.connect();
     }
+
     public void disconnect() {
         mGoogleApiWrapper.disconnect();
     }
+
     public Location getLastLocation() {
         return mGoogleApiWrapper.mLocation;
+    }
+
+    /**
+     * Add listener to listen to on connected, note: may still return null location if
+     * permissions are not set
+     * @param listener
+     */
+    public void listenToLocation(LocationReadyListener listener) {
+        if (mGoogleApiWrapper.mLocation != null) {
+            // if location ready, just immediately call the listener
+            listener.onLocationReady(mGoogleApiWrapper.mLocation);
+        } else {
+            // else queue up the listener
+            mGoogleApiWrapper.addListener(listener);
+        }
+    }
+
+    /**
+     * Interface for listening to location ready
+     */
+    public interface LocationReadyListener {
+
+        void onLocationReady(Location location);
+
     }
 
     /**
@@ -65,6 +100,7 @@ public class LocationHelper {
         Context mContext;
         GoogleApiClient mGoogleApiClient;
         Location mLocation;
+        List<LocationReadyListener> listeners = new LinkedList<>();
 
         public GoogleApiWrapper(Context context) {
             mContext = context;
@@ -73,6 +109,22 @@ public class LocationHelper {
 
         public GoogleApiClient getGoogleApiClient() {
             return this.mGoogleApiClient;
+        }
+
+        public void addListener(LocationReadyListener listener) {
+            listeners.add(listener);
+        }
+
+        public void notifyListeners(Location location) {
+
+            // notify all listeners
+            for (LocationReadyListener listener : listeners) {
+                listener.onLocationReady(location);
+            }
+
+            // clear out listeners
+            listeners.clear();
+
         }
 
         public void connect() {
@@ -113,9 +165,12 @@ public class LocationHelper {
 
             if (permission == PackageManager.PERMISSION_GRANTED) {
                 mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                Log.i(TAG, "onConnected: connected");
             } else {
                 Log.i(TAG, "onConnected: No permission for location!");
             }
+
+            notifyListeners(mLocation);
         }
 
         @Override
