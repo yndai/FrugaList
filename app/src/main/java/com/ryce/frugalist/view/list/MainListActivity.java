@@ -9,7 +9,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -46,14 +45,7 @@ public class MainListActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+    /** the FragmentStatePagerAdapter */
     private ListSectionPagerAdapter mSectionsPagerAdapter;
 
     // callback for deal list
@@ -120,9 +112,7 @@ public class MainListActivity extends AppCompatActivity {
 
     };
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
+    /** The {@link ViewPager} that will host the section contents. */
     private ViewPager mViewPager;
 
     @Override
@@ -140,6 +130,10 @@ public class MainListActivity extends AppCompatActivity {
             return;
         }
 
+        // initialize location helper
+        LocationHelper.initInstance(this);
+        LocationHelper.getInstance().connect();
+
         // try to get permissions for location and file read/write
         requestPermissions();
 
@@ -147,17 +141,18 @@ public class MainListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
+        // Create the adapter that will return a fragment for each of the primary sections of the activity.
         mSectionsPagerAdapter = new ListSectionPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        // set up tabs widget with pager
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        // init FAB for creating a new deal
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,11 +169,9 @@ public class MainListActivity extends AppCompatActivity {
                 Context context = view.getContext();
                 Intent intent = new Intent(context, CreateListingActivity.class);
                 context.startActivity(intent);
-                Log.i(TAG, LocationHelper.getInstance(view.getContext()).getLastLocation().toString());
+                Log.i(TAG, LocationHelper.getInstance().getLastLocation().toString());
             }
         });
-
-
 
     }
 
@@ -206,14 +199,14 @@ public class MainListActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // connect Google Location client
-        LocationHelper.getInstance(this).connect();
+        LocationHelper.getInstance().connect();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         // connect Google Location client
-        LocationHelper.getInstance(this).disconnect();
+        LocationHelper.getInstance().disconnect();
     }
 
     @Override
@@ -254,13 +247,12 @@ public class MainListActivity extends AppCompatActivity {
                     && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
 
                 // granted, connect Google Location client
-                LocationHelper.getInstance(this).connect();
+                LocationHelper.getInstance().connect();
 
             } else {
 
                 // boo, close the activity
                 finish();
-                return;
             }
         }
     }

@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage("Loading...");
+        mProgressDialog.setMessage(getResources().getString(R.string.dialog_loading));
 
         callbackManager = CallbackManager.Factory.create();
 

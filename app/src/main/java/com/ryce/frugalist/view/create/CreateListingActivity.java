@@ -330,8 +330,9 @@ public class CreateListingActivity extends AppCompatActivity {
                     getResources().getString(R.string.create_upload_load_title),
                     getResources().getString(R.string.create_upload_load_msg),
                     true);
+
             // do request
-            ImgurServiceHelper.getInstance().doPostImage(getBaseContext(), request, mImgurResponseCallback);
+            ImgurServiceHelper.doPostImage(getBaseContext(), request, mImgurResponseCallback);
 
         } else {
             Snackbar.make(parentView, "No image to upload/File no longer exists", Snackbar.LENGTH_LONG)

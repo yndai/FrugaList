@@ -14,22 +14,21 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by Tony on 2016-02-07.
+ * Handles JSON marshalling and unmarshalling of Imgur API
  *
- * Http requests & JSON marshalling should go here
+ * Created by Tony on 2016-02-07.
  */
 public class ImgurServiceHelper {
 
     private static final String IMGUR_CLIENT_ID = "Client-ID c09bf20a6cf8625";
     private static final MediaType IMAGE_MEDIA_TYPE = MediaType.parse("image/*");
 
-    private static ImgurServiceHelper ourInstance = new ImgurServiceHelper();
-    public static ImgurServiceHelper getInstance() {
-        return ourInstance;
-    }
     // disallow instantiation
     private ImgurServiceHelper() {
     }
+
+    // service object
+    private static ImgurAPI mImgurAPI;
 
     /**
      * Perform image upload to Imgur
@@ -37,10 +36,10 @@ public class ImgurServiceHelper {
      * @param context
      * @param request
      */
-    public void doPostImage(Context context, ImgurRequest request, Callback<ImgurResponse> callback) {
+    public static void doPostImage(Context context, ImgurRequest request, Callback<ImgurResponse> callback) {
 
         if (!Utils.isConnected(context)) {
-            //Callback will be called, so we prevent a unnecessary notification
+            // Callback will be called, so we prevent a unnecessary notification
             callback.onFailure(null, new Exception("No internet!"));
             return;
         }
@@ -51,18 +50,24 @@ public class ImgurServiceHelper {
         multipartBuilder.addFormDataPart("image", request.image.getName(), fileBody);
 
         // init request
-        Call<ImgurResponse> imagePostCall =
-                ServiceGenerator.createService(ImgurAPI.class).postImage(
-                    IMGUR_CLIENT_ID,
-                    request.title,
-                    request.description,
-                    request.albumId,
-                    null,
-                    fileBody
-                );
+        Call<ImgurResponse> imagePostCall = getService().postImage(
+                IMGUR_CLIENT_ID,
+                request.title,
+                request.description,
+                request.albumId,
+                null,
+                fileBody
+            );
 
         // execute request
         imagePostCall.enqueue(callback);
+    }
+
+    private static ImgurAPI getService() {
+        if (mImgurAPI == null) {
+            mImgurAPI = ServiceGenerator.createService(ImgurAPI.class);
+        }
+        return mImgurAPI;
     }
 
     private static class ServiceGenerator {

@@ -42,10 +42,6 @@ public class User {
         return facebookId;
     }
 
-    public void setFacebookId(String facebookId) {
-        this.facebookId = facebookId;
-    }
-
     public String getName() {
         return name;
     }

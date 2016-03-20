@@ -8,6 +8,8 @@ import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 /**
+ * Frugalist API skeletons
+ *
  * Created by Tony on 2016-03-13.
  */
 public interface FrugalistAPI {
@@ -169,7 +171,7 @@ public interface FrugalistAPI {
      * @return
      */
     @DELETE("deal/delete")
-    Call<FrugalistResponse.ResponseMsg> updateDealRating(
+    Call<FrugalistResponse.ResponseMsg> deleteDeal(
             @Query("id") Long id
     );
 

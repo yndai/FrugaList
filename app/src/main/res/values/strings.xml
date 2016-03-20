@@ -10,6 +10,8 @@
     <string name="title_activity_listing_detail"></string>
     <string name="title_activity_login">FrugaList Login</string>
 
+    <string name="dialog_loading">Loading...</string>
+
     <string name="picture_not_available">Picture not available</string>
     <string name="insert_location">Choose Store Location</string>
 
@@ -23,12 +25,12 @@
     <string name="create_upload_load_msg">Please wait</string>
 
     <string-array name="unitArray">
-        <item>/ each</item>
-        <item>/ 100g</item>
-        <item>/ 100mL</item>
-        <item>/ lb</item>
-        <item>/ kg</item>
-        <item>/ L</item>
+        <item>each</item>
+        <item>100g</item>
+        <item>100mL</item>
+        <item>lb</item>
+        <item>kg</item>
+        <item>L</item>
     </string-array>
 
 </resources>
