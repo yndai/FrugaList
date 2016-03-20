@@ -6,6 +6,7 @@ import android.widget.EditText;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * TextWatcher for currency input
@@ -42,7 +43,7 @@ public class MoneyTextWatcher implements TextWatcher {
         BigDecimal parsed = new BigDecimal(cleanString)
                                 .setScale(2, BigDecimal.ROUND_FLOOR)
                                 .divide(new BigDecimal(100), BigDecimal.ROUND_FLOOR);
-        String formatted = NumberFormat.getCurrencyInstance().format(parsed);
+        String formatted = NumberFormat.getCurrencyInstance(Locale.CANADA).format(parsed);
         editable.clear();
         mEditText.setText(formatted);
         mEditText.setSelection(formatted.length());
