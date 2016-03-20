@@ -48,6 +48,8 @@ public class MainListActivity extends AppCompatActivity {
     /** the FragmentStatePagerAdapter */
     private ListSectionPagerAdapter mSectionsPagerAdapter;
 
+
+
     // callback for deal list
     Callback<FrugalistResponse.DealList> mFrugalistDealListCallback = new Callback<FrugalistResponse.DealList>() {
         @Override
@@ -132,7 +134,6 @@ public class MainListActivity extends AppCompatActivity {
 
         // initialize location helper
         LocationHelper.initInstance(this);
-        LocationHelper.getInstance().connect();
 
         // try to get permissions for location and file read/write
         requestPermissions();
@@ -198,8 +199,11 @@ public class MainListActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // connect Google Location client
-        LocationHelper.getInstance().connect();
+        // connect Google Location client if we have location permission, otherwise, wait for permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
+            LocationHelper.getInstance().connect();
+        }
     }
 
     @Override

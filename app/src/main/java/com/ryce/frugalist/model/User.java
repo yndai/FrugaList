@@ -12,12 +12,12 @@ import java.util.Set;
  */
 public class User {
 
-    private String facebookId;
+    private String id;
     private String name;
     private Set<Long> bookmarks;
 
-    public User(String facebookId, String name, Set<Long> bookmarks) {
-        this.facebookId = facebookId;
+    public User(String id, String name, Set<Long> bookmarks) {
+        this.id = id;
         this.name = name;
         this.bookmarks = new HashSet<>(bookmarks);
     }
@@ -27,7 +27,7 @@ public class User {
      * @param user
      */
     public User(FrugalistResponse.User user) {
-        this.facebookId = user.id;
+        this.id = user.id;
         this.name = user.name;
         this.bookmarks = user.bookmarks == null ?
                 new HashSet<Long>() :
@@ -38,8 +38,8 @@ public class User {
         return bookmarks;
     }
 
-    public String getFacebookId() {
-        return facebookId;
+    public String getId() {
+        return id;
     }
 
     public String getName() {

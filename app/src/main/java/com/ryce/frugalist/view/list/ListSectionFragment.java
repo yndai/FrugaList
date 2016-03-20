@@ -36,7 +36,7 @@ import retrofit2.Response;
  *
  * Fragment containing a list section
  */
-public class ListSectionFragment extends Fragment implements LocationHelper.LocationReadyListener {
+public class ListSectionFragment extends Fragment implements LocationHelper.LocationConnectionListener {
 
     private static final String TAG = ListSectionFragment.class.getSimpleName();
 
@@ -57,6 +57,9 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressDialog mProgressDialog;
 
+    /**
+     * Do not call this
+     */
     public ListSectionFragment() {
     }
 
@@ -144,8 +147,12 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
         return rootView;
     }
 
+    /**
+     * Wait for connection to location client before fetching list
+     * @param location
+     */
     @Override
-    public void onLocationReady(Location location) {
+    public void onLocationConnectionReady(Location location) {
 
         if (mListSection == ListSection.NEARBY) {
 
@@ -183,6 +190,7 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
             FrugalistServiceHelper.doGetNearbyDealList(mFrugalistDealListCallback,
                     (float) loc.getLatitude(), (float) loc.getLongitude(), /* TODO: HARD CODED! */5);
         } else {
+            Log.i(TAG, "Location not available");
             FrugalistServiceHelper.doGetDealList(mFrugalistDealListCallback);
         }
     }

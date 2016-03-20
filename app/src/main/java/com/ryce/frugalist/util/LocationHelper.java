@@ -20,16 +20,20 @@ import java.util.List;
  *
  * Created by Tony on 2016-03-16.
  */
-public class LocationHelper {
+public class LocationHelper implements
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
+    private static final String TAG = LocationHelper.class.getSimpleName();
 
     private static LocationHelper ourInstance;
-    private static Context mContext;
-    private GoogleApiWrapper mGoogleApiWrapper;
+
+    private Context mContext;
 
     // disallow instantiation
     private LocationHelper(Context context) {
-        // initialize and builder google api client
-        mGoogleApiWrapper = new GoogleApiWrapper(context);
+        this.mContext = context;
+        // init Google client
+        buildGoogleApiClient(context);
     }
 
     /**
@@ -50,19 +54,19 @@ public class LocationHelper {
         return ourInstance;
     }
 
-    public boolean isConnected() {
-        return mGoogleApiWrapper.isConnected();
-    }
-    public void connect() {
-        mGoogleApiWrapper.connect();
-    }
+    /**************************************
+     * Location connection listening
+     **************************************/
 
-    public void disconnect() {
-        mGoogleApiWrapper.disconnect();
-    }
+    List<LocationConnectionListener> listeners = new LinkedList<>();
 
-    public Location getLastLocation() {
-        return mGoogleApiWrapper.mLocation;
+    /**
+     * Interface for listening to location API connected
+     */
+    public interface LocationConnectionListener {
+
+        void onLocationConnectionReady(Location location);
+
     }
 
     /**
@@ -70,119 +74,127 @@ public class LocationHelper {
      * permissions are not set
      * @param listener
      */
-    public void listenToLocation(LocationReadyListener listener) {
-        if (mGoogleApiWrapper.mLocation != null) {
-            // if location ready, just immediately call the listener
-            listener.onLocationReady(mGoogleApiWrapper.mLocation);
+    public void listenToLocation(LocationConnectionListener listener) {
+        if (isConnected()) {
+            // if connection ready, just immediately call the listener
+            listener.onLocationConnectionReady(mLocation);
         } else {
             // else queue up the listener
-            mGoogleApiWrapper.addListener(listener);
-        }
-    }
-
-    /**
-     * Interface for listening to location ready
-     */
-    public interface LocationReadyListener {
-
-        void onLocationReady(Location location);
-
-    }
-
-    /**
-     * Inner class to wrap the Google API Client connection
-     */
-    private class GoogleApiWrapper implements
-            GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-
-        private final String TAG = GoogleApiWrapper.class.getSimpleName();
-
-        Context mContext;
-        GoogleApiClient mGoogleApiClient;
-        Location mLocation;
-        List<LocationReadyListener> listeners = new LinkedList<>();
-
-        public GoogleApiWrapper(Context context) {
-            mContext = context;
-            buildGoogleApiClient(context);
-        }
-
-        public GoogleApiClient getGoogleApiClient() {
-            return this.mGoogleApiClient;
-        }
-
-        public void addListener(LocationReadyListener listener) {
             listeners.add(listener);
         }
+    }
 
-        public void notifyListeners(Location location) {
+    /**
+     * Notify listeners that we are connected
+     * @param location
+     */
+    private void notifyListeners(Location location) {
 
-            // notify all listeners
-            for (LocationReadyListener listener : listeners) {
-                listener.onLocationReady(location);
-            }
-
-            // clear out listeners
-            listeners.clear();
-
+        // notify all listeners
+        for (LocationConnectionListener listener : listeners) {
+            listener.onLocationConnectionReady(location);
         }
 
-        public void connect() {
-            if (mGoogleApiClient != null && !mGoogleApiClient.isConnected()) {
-                mGoogleApiClient.connect();
-            }
-        }
+        // clear out listeners
+        listeners.clear();
+    }
 
-        public void disconnect() {
-            if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-                mGoogleApiClient.disconnect();
-            }
-        }
+    /**************************************
+     * Google API Client methods
+     **************************************/
 
-        public boolean isConnected() {
-            if (mGoogleApiClient != null) {
-                return mGoogleApiClient.isConnected();
-            } else {
-                return false;
-            }
-        }
+    GoogleApiClient mGoogleApiClient;
+    Location mLocation;
 
-        private void buildGoogleApiClient(Context context) {
-            if (mGoogleApiClient == null) {
-                mGoogleApiClient = new GoogleApiClient.Builder(context)
-                        .addConnectionCallbacks(this)
-                        .addOnConnectionFailedListener(this)
-                        .addApi(LocationServices.API)
-                        .build();
-            }
-        }
-
-        @Override
-        public void onConnected(Bundle bundle) {
-
-            // check if we have permission to access location
-            int permission = ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION);
-
-            if (permission == PackageManager.PERMISSION_GRANTED) {
-                mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-                Log.i(TAG, "onConnected: connected");
-            } else {
-                Log.i(TAG, "onConnected: No permission for location!");
-            }
-
-            notifyListeners(mLocation);
-        }
-
-        @Override
-        public void onConnectionSuspended(int i) {
-            Log.i(TAG, "onConnectionSuspended");
+    /**
+     * Connect to Google API
+     */
+    public void connect() {
+        if (mGoogleApiClient != null && !mGoogleApiClient.isConnected()) {
             mGoogleApiClient.connect();
         }
+    }
 
-        @Override
-        public void onConnectionFailed(ConnectionResult connectionResult) {
-            Log.i(TAG, "onConnectionFailed: " + connectionResult.toString());
+    /**
+     * Disconnect from Google API
+     */
+    public void disconnect() {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    /**
+     * True if connected to Google API
+     * @return
+     */
+    public boolean isConnected() {
+        if (mGoogleApiClient != null) {
+            return mGoogleApiClient.isConnected();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get last location, may be null
+     * @return
+     */
+    public Location getLastLocation() {
+        if (isConnected()) {
+            try {
+                mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            } catch (SecurityException e){/* Not handling */}
+        }
+        return mLocation;
+    }
+
+    private void buildGoogleApiClient(Context context) {
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(context)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+    }
+
+    /**
+     * Do not call this directly
+     * @param bundle
+     */
+    @Override
+    public void onConnected(Bundle bundle) {
+
+        // check if we have permission to access location
+        int permission = ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION);
+        if (permission == PackageManager.PERMISSION_GRANTED) {
+            mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            Log.i(TAG, "onConnected: connected");
+        } else {
+            Log.i(TAG, "onConnected: No permission for location!");
         }
 
+        notifyListeners(mLocation);
     }
+
+    /**
+     * Do not call this directly
+     * @param i
+     */
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "onConnectionSuspended");
+        mGoogleApiClient.connect();
+    }
+
+    /**
+     * Do not call this directly
+     * @param connectionResult
+     */
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.i(TAG, "onConnectionFailed: " + connectionResult.toString());
+    }
+
 }

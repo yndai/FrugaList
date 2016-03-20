@@ -4,6 +4,8 @@ import android.graphics.Color;
 
 import com.ryce.frugalist.network.FrugalistResponse;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.Map;
  * Presentation layer deal model
  */
 public class Deal extends AbstractListing {
+
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
 
     private String price;
     private String unit;
@@ -70,6 +74,14 @@ public class Deal extends AbstractListing {
         return store;
     }
 
+    public Map<String, Boolean> getVotes() {
+        return votes;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     /****************************************
      * CONVENIENCE METHODS
      ****************************************/
@@ -84,6 +96,10 @@ public class Deal extends AbstractListing {
 
     public int getRatingColour() {
         return (rating >= 0 ? Color.rgb(0, 150, 0) : Color.RED);
+    }
+
+    public String getFormattedDate() {
+        return DATE_FORMAT.format(getCreated());
     }
 
     /**

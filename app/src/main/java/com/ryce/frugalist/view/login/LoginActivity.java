@@ -82,39 +82,6 @@ public class LoginActivity extends AppCompatActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    /** Callback for Frugalist API User fetch */
-    Callback<FrugalistResponse.User> mFrugalistUserCallback = new Callback<FrugalistResponse.User>() {
-
-        @Override
-        public void onResponse(Call<FrugalistResponse.User> call,
-                               Response<FrugalistResponse.User> response
-        ) {
-            if (response.isSuccess()) {
-
-                // User fetched
-                FrugalistResponse.User user = response.body();
-                Log.i(TAG, user.toString());
-                onUserFetched(user);
-
-            } else {
-                try {
-                    Log.i(TAG, "Error: " + response.errorBody().string());
-                } catch (IOException e) {/* not handling */}
-            }
-
-            mProgressDialog.dismiss();
-        }
-
-        @Override
-        public void onFailure(Call<FrugalistResponse.User> call, Throwable t) {
-            Log.i(TAG, "Error: " + t.getMessage());
-            Snackbar.make(findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-
-            mProgressDialog.dismiss();
-        }
-    };
-
     /**
      * Called after User is fetched from Frugalist API
      * @param responseUser
@@ -168,6 +135,39 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
+    /** Callback for Frugalist API User fetch */
+    Callback<FrugalistResponse.User> mFrugalistUserCallback = new Callback<FrugalistResponse.User>() {
+
+        @Override
+        public void onResponse(Call<FrugalistResponse.User> call,
+                               Response<FrugalistResponse.User> response
+        ) {
+            if (response.isSuccess()) {
+
+                // User fetched
+                FrugalistResponse.User user = response.body();
+                Log.i(TAG, user.toString());
+                onUserFetched(user);
+
+            } else {
+                try {
+                    Log.i(TAG, "Error: " + response.errorBody().string());
+                } catch (IOException e) {/* not handling */}
+            }
+
+            mProgressDialog.dismiss();
+        }
+
+        @Override
+        public void onFailure(Call<FrugalistResponse.User> call, Throwable t) {
+            Log.i(TAG, "Error: " + t.getMessage());
+            Snackbar.make(findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+
+            mProgressDialog.dismiss();
+        }
+    };
+
     /** Callback for Facebook login */
     private FacebookCallback<LoginResult> mCallBack = new FacebookCallback<LoginResult>() {
         @Override
@@ -182,8 +182,8 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
                         // profile2 is the new profile
-                        //onProfileReady(profile2);
-                        onProfileReadyTesting(profile2);
+                        onProfileReady(profile2);
+                        //onProfileReadyTesting(profile2);
                         mProfileTracker.stopTracking();
                     }
                 };
@@ -193,8 +193,8 @@ public class LoginActivity extends AppCompatActivity {
             else {
                 // Profile is ready, just continue
                 Profile profile = Profile.getCurrentProfile();
-                //onProfileReady(profile);
-                onProfileReadyTesting(profile);
+                onProfileReady(profile);
+                //onProfileReadyTesting(profile);
             }
 
 

@@ -1,58 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <TextView
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Peaches"
         android:id="@+id/productText"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="30dp"
         android:layout_marginStart="20dp"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:text="Product" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="2.99/lb"
         android:id="@+id/priceText"
         android:layout_below="@+id/productText"
         android:layout_alignStart="@+id/productText"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:text="Price" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Created:"
+        android:id="@+id/createdTitle"
+        android:layout_below="@+id/priceText"
+        android:layout_alignStart="@+id/priceText"
+        android:layout_marginTop="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="mm/dd/yyyy"
+        android:id="@+id/createdText"
+        android:layout_alignBottom="@+id/createdTitle"
+        android:layout_toEndOf="@+id/createdTitle"
+        android:layout_marginLeft="15dp" />
 
     <TextView
         android:layout_width="80dp"
         android:layout_height="40dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="+200"
         android:id="@+id/ratingText"
         android:gravity="center"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/upButton"
         android:layout_marginRight="15dp"
-        android:layout_marginTop="0dp" />
+        android:layout_marginTop="0dp"
+        android:text="0" />
 
     <TextView
-        android:layout_width="250dp"
+        android:layout_width="340dp"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Sobey&apos;s"
         android:id="@+id/storeNameText"
-        android:layout_below="@+id/priceText"
-        android:layout_alignStart="@+id/priceText"
-        android:layout_marginTop="21dp" />
+        android:layout_below="@+id/createdTitle"
+        android:layout_alignStart="@+id/createdTitle"
+        android:layout_marginTop="20dp"
+        android:text="Store" />
 
     <TextView
-        android:layout_width="320dp"
+        android:layout_width="210dp"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="200 Erb St W"
         android:id="@+id/storeAddressText"
         android:layout_below="@+id/storeNameText"
         android:layout_alignStart="@+id/storeNameText"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:text="Address" />
 
     <ImageButton
         android:layout_width="80dp"
@@ -61,8 +82,9 @@
         android:src="@drawable/arrow_up"
         android:scaleType="fitCenter"
         android:layout_alignStart="@id/ratingText"
-        android:backgroundTint="#8bc34a"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        android:background="#8bc34a"
+        android:padding="5dp" />
 
     <ImageButton
         android:layout_width="80dp"
@@ -73,14 +95,32 @@
         android:layout_marginTop="0dp"
         android:layout_below="@+id/ratingText"
         android:layout_alignStart="@+id/ratingText"
-        android:backgroundTint="#d32f2f" />
+        android:background="#d32f2f"
+        android:padding="5dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Show on Map"
         android:id="@+id/mapButton"
-        android:layout_below="@+id/storeAddressText"
-        android:layout_alignStart="@+id/storeAddressText" />
+        android:background="@color/colorAccent"
+        android:textColor="#ffffff"
+        android:layout_alignTop="@+id/storeAddressText"
+        android:layout_toEndOf="@+id/storeAddressText"
+        android:padding="8dp"
+        android:layout_margin="10dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:id="@+id/deleteButton"
+        android:background="#b71c1c"
+        android:textColor="#ffffff"
+        android:padding="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="100dp"
+        android:visibility="gone" />
 
 </RelativeLayout>
