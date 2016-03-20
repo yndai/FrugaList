@@ -1,7 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
 
-</LinearLayout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <!-- Dummy item to prevent TextView from receiving initial focus -->
+    <LinearLayout
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/layoutSortSpinner"
+        android:layout_width="180dp"
+        android:layout_height="60dp">
+
+        <Spinner
+            android:id="@+id/inputSortSpinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:padding="16dp"
+            android:inputType="text"
+            android:hint="Search by item name or store"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/layoutTypeSpinner"
+        android:layout_width="180dp"
+        android:layout_height="60dp"
+        android:layout_toRightOf="@+id/layoutSortSpinner">
+
+        <Spinner
+            android:id="@+id/inputTypeSpinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:padding="16dp"
+            android:inputType="text"
+            android:hint="Search by item name or store"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/layoutSearchInput"
+        android:layout_width="290dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/layoutSortSpinner">
+
+        <EditText
+            android:id="@+id/inputSearch"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:padding="16dp"
+            android:inputType="text"
+            android:hint="Search by item name or store"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/unitLayout"
+        style="@style/DefTextInputLayout"
+        android:layout_width="60dp"
+        android:layout_toEndOf="@id/layoutSearchInput"
+        android:layout_below="@+id/layoutTypeSpinner">
+
+        <Button
+            android:id="@+id/buttonSearch"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:text=""
+            android:textSize="24sp" />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+
+        android:id="@+id/searchListView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false"
+        tools:listitem="@layout/main_list_item_deal"
+        android:layout_below="@id/layoutSearchInput"
+        android:layout_marginTop="16dp" />
+
+</RelativeLayout>

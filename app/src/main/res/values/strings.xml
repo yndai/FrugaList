@@ -8,6 +8,7 @@
 
     <string name="title_activity_create_listing">Post a Deal</string>
     <string name="title_activity_listing_detail"></string>
+    <string name="title_activity_search">Search for Item</string>
     <string name="title_activity_login">FrugaList Login</string>
 
     <string name="picture_not_available">Picture not available</string>
@@ -29,6 +30,17 @@
         <item>/ lb</item>
         <item>/ kg</item>
         <item>/ L</item>
+    </string-array>
+
+    <string-array name="searchSortListArray">
+        <item>Most Recent</item>
+        <item>Highest Rated</item>
+        <item>Lowest Price</item>
+    </string-array>
+
+    <string-array name="searchTypeListArray">
+        <item>Product</item>
+        <item>Store</item>
     </string-array>
 
 </resources>

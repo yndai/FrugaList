@@ -1,6 +1,7 @@
 package com.ryce.frugalist.view.list;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.facebook.FacebookSdk;
 import com.ryce.frugalist.R;
@@ -26,6 +28,7 @@ import com.ryce.frugalist.util.LocationHelper;
 import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.view.create.CreateListingActivity;
 import com.ryce.frugalist.view.login.LoginActivity;
+import com.ryce.frugalist.view.search.SearchListingActivity;
 
 import java.io.IOException;
 
@@ -177,9 +180,6 @@ public class MainListActivity extends AppCompatActivity {
                 Log.i(TAG, LocationHelper.getInstance(view.getContext()).getLastLocation().toString());
             }
         });
-
-
-
     }
 
     /**
@@ -234,6 +234,10 @@ public class MainListActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id == R.id.searchMenu) {
+            Intent intent = new Intent(this, SearchListingActivity.class);
+            startActivity(intent);
+        }
         if(id == R.id.action_logout){
             UserHelper.userLogout(MainListActivity.this);
             Intent intent = new Intent(this, LoginActivity.class);
@@ -264,5 +268,4 @@ public class MainListActivity extends AppCompatActivity {
             }
         }
     }
-
 }
