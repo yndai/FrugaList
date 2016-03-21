@@ -66,7 +66,8 @@ public interface FrugalistAPI {
             @Query("product") String product,
             @Query("latitude") Float latitude,
             @Query("longitude") Float longitude,
-            @Query("radius") Integer radius
+            @Query("radius") Integer radius,
+            @Query("sortType") Integer sortType
     );
 
     /**
@@ -83,7 +84,8 @@ public interface FrugalistAPI {
             @Query("product") String store,
             @Query("latitude") Float latitude,
             @Query("longitude") Float longitude,
-            @Query("radius") Integer radius
+            @Query("radius") Integer radius,
+            @Query("sortType") Integer sortType
     );
 
     /**

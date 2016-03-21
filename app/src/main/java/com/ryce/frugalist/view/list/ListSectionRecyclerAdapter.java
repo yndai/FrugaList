@@ -1,9 +1,11 @@
 package com.ryce.frugalist.view.list;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +15,21 @@ import android.widget.TextView;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.Deal;
-import com.ryce.frugalist.model.MockDatastore;
+import com.ryce.frugalist.model.User;
+import com.ryce.frugalist.network.FrugalistResponse;
+import com.ryce.frugalist.network.FrugalistServiceHelper;
+import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.view.detail.ListingDetailActivity;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
 import com.ryce.frugalist.view.list.ListSectionPagerAdapter.ListSection;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Tony on 2016-02-07.
@@ -29,14 +39,16 @@ import java.util.List;
 public class ListSectionRecyclerAdapter
         extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final Context mContext;
+    private static final String TAG = ListSectionRecyclerAdapter.class.getSimpleName();
+
+    private final Activity mActivity;
     private List<AbstractListing> mItems;
     private final ListingType mItemType;
     private final ListSection mListSection;
 
-    public ListSectionRecyclerAdapter(Context context,
+    public ListSectionRecyclerAdapter(Activity activity,
             List<AbstractListing> items, ListingType itemType, ListSection listSection) {
-        mContext = context;
+        mActivity = activity;
         mItems = items;
         mItemType = itemType;
         mListSection = listSection;
@@ -51,16 +63,7 @@ public class ListSectionRecyclerAdapter
                     .inflate(R.layout.main_list_item_deal, parent, false);
             return new DealViewHolder(view);
 
-        }
-//        else if (viewType == ListingType.FREEBIE.toInteger()) {
-//
-//            // TODO: layout not supported now
-//            View view = LayoutInflater.from(parent.getContext())
-//                    .inflate(R.layout.main_list_item_deal, parent, false);
-//            return new FreebieViewHolder(view);
-//
-//        }
-        else {
+        } else {
 
             // TODO: what is the default ??
             View view = LayoutInflater.from(parent.getContext())
@@ -85,9 +88,16 @@ public class ListSectionRecyclerAdapter
             dealHolder.mRatingTextView.setText(deal.getFormattedRating());
             dealHolder.mRatingTextView.setTextColor(deal.getRatingColour());
 
+            // mark if deal has been bookmarked
+            if (UserHelper.getCurrentUser(mActivity).getBookmarks().contains(deal.getId())) {
+                dealHolder.mBookmarkImgView.setVisibility(View.VISIBLE);
+            } else {
+                dealHolder.mBookmarkImgView.setVisibility(View.INVISIBLE);
+            }
+
             // load image via URL
             // note: we get height of picture frame (in pixels)
-            final int imgHeight = (int) mContext.getResources().getDimension(R.dimen.list_item_height);
+            final int imgHeight = (int) mActivity.getResources().getDimension(R.dimen.list_item_height);
             Picasso p = Picasso.with(dealHolder.mView.getContext());
             //p.setIndicatorsEnabled(true);
             p.load(deal.getThumbnailUrl())
@@ -114,15 +124,25 @@ public class ListSectionRecyclerAdapter
                 public boolean onLongClick(View v) {
                     if (mListSection == ListSection.SAVED) {
                         // in the book marks section, we delete instead
-                        MockDatastore.getInstance().removeBookmark(deal);
-                        Snackbar.make(v, "Removed bookmark", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
+                        executeAddOrDeleteBookmark(UserHelper.getCurrentUser(mActivity).getId(),
+                                deal.getId(), false);
 
+                        // remove item from data list
+                        mItems.remove(position);
+                        notifyDataSetChanged();
                     } else {
                         // in a deals section, we add a bookmark
-                        MockDatastore.getInstance().addBookmark(deal);
-                        Snackbar.make(v, "Bookmarked!", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
+                        // check that user has not already bookmarked
+                        if (!UserHelper.getCurrentUser(mActivity).getBookmarks().contains(deal.getId())) {
+                            executeAddOrDeleteBookmark(UserHelper.getCurrentUser(mActivity).getId(),
+                                    deal.getId(), true);
+                        } else {
+                            Snackbar.make(mActivity.findViewById(android.R.id.content), "Bookmarked already!", Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+                        }
+
+                        // make bookmark icon visible
+                        dealHolder.mBookmarkImgView.setVisibility(View.VISIBLE);
                     }
                     return true;
                 }
@@ -178,7 +198,7 @@ public class ListSectionRecyclerAdapter
         public final TextView mStoreTextView;
         public final TextView mRatingTextView;
         public final ImageView mImageView;
-        public Deal mDeal;
+        public final ImageView mBookmarkImgView;
 
         public DealViewHolder(View view) {
             super(view);
@@ -187,43 +207,72 @@ public class ListSectionRecyclerAdapter
             mPriceTextView = (TextView) view.findViewById(R.id.priceText);
             mStoreTextView = (TextView) view.findViewById(R.id.storeText);
             mRatingTextView = (TextView) view.findViewById(R.id.ratingText);
-            mImageView= (ImageView) view.findViewById(R.id.dealThumb);
+            mImageView = (ImageView) view.findViewById(R.id.dealThumb);
+            mBookmarkImgView = (ImageView) view.findViewById(R.id.bookmarkImg);
         }
 
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mDeal.getProduct() + "'";
-        }
+    }
+
+    /**********************************************************************
+     * Deal bookmarking
+     **********************************************************************/
+
+    /**
+     * Update user model, adding/deleting a bookmark of this deal
+     * @param userId
+     * @param dealId
+     */
+    private void executeAddOrDeleteBookmark(String userId, long dealId, boolean add) {
+        FrugalistServiceHelper.doAddOrDeleteBookmark(mFrugalistUserCallback, userId, dealId, add);
     }
 
     /**
-     * Stores the view layout for a freebie list item
-     * TODO: Not used
+     * Called after user has been updated
+     * @param resUser
      */
-    public class FreebieViewHolder extends RecyclerView.ViewHolder {
+    private void onUserUpdated(FrugalistResponse.User resUser) {
+        // convert model
+        User user = new User(resUser);
 
-        public final View mView;
-        public final TextView mDealTextView;
-        public final TextView mPriceTextView;
-        public final TextView mStoreTextView;
-        public final TextView mRatingTextView;
-        public final ImageView mImageView;
-        public Deal mDeal;
+        // update the current user model
+        UserHelper.setCurrentUser(user, mActivity);
 
-        public FreebieViewHolder(View view) {
-            super(view);
-            mView = view;
-            mDealTextView = (TextView) view.findViewById(R.id.productText);
-            mPriceTextView = (TextView) view.findViewById(R.id.priceText);
-            mStoreTextView = (TextView) view.findViewById(R.id.storeText);
-            mRatingTextView = (TextView) view.findViewById(R.id.ratingText);
-            mImageView= (ImageView) view.findViewById(R.id.dealThumb);
+        // show notification for bookmark add/delete
+        if (mListSection == ListSection.SAVED) {
+            Snackbar.make(mActivity.findViewById(android.R.id.content), "Removed Bookmark", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        } else {
+            Snackbar.make(mActivity.findViewById(android.R.id.content), "Bookmarked!", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+        }
+    }
+
+    /** Callback for Frugalist API User fetch */
+    Callback<FrugalistResponse.User> mFrugalistUserCallback = new Callback<FrugalistResponse.User>() {
+        @Override
+        public void onResponse(Call<FrugalistResponse.User> call,
+                               Response<FrugalistResponse.User> response
+        ) {
+            if (response.isSuccess()) {
+
+                // User fetched
+                FrugalistResponse.User user = response.body();
+                Log.i(TAG, user.toString());
+                onUserUpdated(user);
+
+            } else {
+                try {
+                    Log.i(TAG, "Error: " + response.errorBody().string());
+                } catch (IOException e) {/* not handling */}
+            }
         }
 
         @Override
-        public String toString() {
-            return super.toString() + " '" + mDeal.getProduct() + "'";
+        public void onFailure(Call<FrugalistResponse.User> call, Throwable t) {
+            Log.i(TAG, "Error: " + t.getMessage());
+            Snackbar.make(mActivity.findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         }
-    }
+    };
 
 }

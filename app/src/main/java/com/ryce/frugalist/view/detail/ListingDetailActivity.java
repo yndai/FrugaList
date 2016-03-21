@@ -20,7 +20,6 @@ import android.widget.TextView;
 
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.Deal;
-import com.ryce.frugalist.model.MockDatastore;
 import com.ryce.frugalist.model.User;
 import com.ryce.frugalist.network.FrugalistResponse;
 import com.ryce.frugalist.network.FrugalistServiceHelper;
@@ -51,6 +50,7 @@ public class ListingDetailActivity extends AppCompatActivity {
     private Deal mDeal;
 
     ImageView mImageView;
+    ImageView mBookmarkImg;
     TextView mProductText;
     TextView mPriceText;
     TextView mCreatedText;
@@ -75,6 +75,7 @@ public class ListingDetailActivity extends AppCompatActivity {
         mProgressDialog.setMessage(getResources().getString(R.string.dialog_loading));
 
         // get views
+        mBookmarkImg = (ImageView) findViewById(R.id.bookmarkImg);
         mImageView = (ImageView) findViewById(R.id.detailImage);
         mProductText = (TextView) findViewById(R.id.productText);
         mPriceText = (TextView) findViewById(R.id.priceText);
@@ -90,31 +91,15 @@ public class ListingDetailActivity extends AppCompatActivity {
         // get type of listing we are displaying
         mType = (ListingType) getIntent().getExtras().get(ARG_LISTING_TYPE);
 
+        // fetch deal by ID
         if (mType == ListingType.DEAL) {
 
-            // fetch deal by id
-            //UUID id = (UUID) getIntent().getExtras().get(ARG_LISTING_ID);
+            // get id from extras
             Long id = (Long) getIntent().getExtras().get(ARG_LISTING_ID);
 
             // fetch deal by id
             executeFetchDeal(id);
             mProgressDialog.show();
-
-//            mDeal = MockDatastore.getInstance().getDeal(id);
-//            final Deal deal = (Deal) mDeal;
-//
-//            // Load image via URL
-//            Picasso p = Picasso.with(this);
-//            p.setIndicatorsEnabled(true);
-//            p.load(deal.getImageUrl()).into(mImageView);
-//
-//            // display data
-//            mProductText.setText(deal.getProduct());
-//            mPriceText.setText(deal.getFormattedPrice());
-//            mStoreText.setText(deal.getStore());
-//            mAddressText.setText(deal.getAddress());
-//            mRatingText.setText(deal.getFormattedRating());
-//            mRatingText.setTextColor(deal.getRatingColour());
         }
 
         // init vote buttons
@@ -125,7 +110,7 @@ public class ListingDetailActivity extends AppCompatActivity {
                         mDeal.getId(),
                         UserHelper.getCurrentUser(ListingDetailActivity.this).getId(),
                         true);
-                mProgressDialog.show();
+                //mProgressDialog.show();
             }
         });
         mDownButton.setOnClickListener(new View.OnClickListener() {
@@ -135,7 +120,7 @@ public class ListingDetailActivity extends AppCompatActivity {
                         mDeal.getId(),
                         UserHelper.getCurrentUser(ListingDetailActivity.this).getId(),
                         false);
-                mProgressDialog.show();
+                //mProgressDialog.show();
             }
         });
 
@@ -143,11 +128,16 @@ public class ListingDetailActivity extends AppCompatActivity {
         mBookmarkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mType == ListingType.DEAL) {
-                    MockDatastore.getInstance().addBookmark(mDeal);
+                User user = UserHelper.getCurrentUser(ListingDetailActivity.this);
+                if (!user.getBookmarks().contains(mDeal.getId())) {
+                    // if user has not already added bookmark, add it
+                    executeAddBookmark(user.getId(), mDeal.getId());
+                    //mProgressDialog.show();
+                } else {
+                    // user has already added this bookmark, nothing to do
+                    Snackbar.make(findViewById(android.R.id.content), "Already in bookmarks!", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
                 }
-                Snackbar.make(view, "Bookmarked!", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
             }
         });
 
@@ -198,6 +188,13 @@ public class ListingDetailActivity extends AppCompatActivity {
             mDeleteButton.setVisibility(View.GONE);
         }
 
+        // if user has bookmarked, show bookmark icon
+        if (user.getBookmarks().contains(deal.getId())) {
+            mBookmarkImg.setVisibility(View.VISIBLE);
+        } else {
+            mBookmarkImg.setVisibility(View.INVISIBLE);
+        }
+
         // set state of vote buttons
         if (deal.getVotes() != null) {
             Boolean vote = deal.getVotes().get(user.getId());
@@ -244,7 +241,7 @@ public class ListingDetailActivity extends AppCompatActivity {
         refreshData(deal);
     }
 
-    // callback for deal
+    /** callback for Frugalist API deal fetch */
     Callback<FrugalistResponse.Deal> mFrugalistDealCallback = new Callback<FrugalistResponse.Deal>() {
         @Override
         public void onResponse(Call<FrugalistResponse.Deal> call,
@@ -278,6 +275,65 @@ public class ListingDetailActivity extends AppCompatActivity {
      * Adding deal to bookmarks
      **********************************************************************/
 
+    /**
+     * Update user model, adding a bookmark of this deal
+     * @param userId
+     * @param dealId
+     */
+    private void executeAddBookmark(String userId, long dealId) {
+        FrugalistServiceHelper.doAddOrDeleteBookmark(mFrugalistUserCallback, userId, dealId, true);
+    }
+
+    /**
+     * Called after user has been updated
+     * @param resUser
+     */
+    private void onUserUpdated(FrugalistResponse.User resUser) {
+        // convert model
+        User user = new User(resUser);
+
+        // update the current user model
+        UserHelper.setCurrentUser(user, this);
+
+        // make bookmark icon visible
+        mBookmarkImg.setVisibility(View.VISIBLE);
+
+        // show notification for bookmark
+        Snackbar.make(findViewById(android.R.id.content), "Bookmarked!", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+    }
+
+    /** Callback for Frugalist API User fetch */
+    Callback<FrugalistResponse.User> mFrugalistUserCallback = new Callback<FrugalistResponse.User>() {
+        @Override
+        public void onResponse(Call<FrugalistResponse.User> call,
+                               Response<FrugalistResponse.User> response
+        ) {
+            if (response.isSuccess()) {
+
+                // User fetched
+                FrugalistResponse.User user = response.body();
+                Log.i(TAG, user.toString());
+                onUserUpdated(user);
+
+            } else {
+                try {
+                    Log.i(TAG, "Error: " + response.errorBody().string());
+                } catch (IOException e) {/* not handling */}
+            }
+
+            mProgressDialog.dismiss();
+        }
+
+        @Override
+        public void onFailure(Call<FrugalistResponse.User> call, Throwable t) {
+            Log.i(TAG, "Error: " + t.getMessage());
+            Snackbar.make(findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+
+            mProgressDialog.dismiss();
+        }
+    };
 
     /**********************************************************************
      * Updating Deal rating

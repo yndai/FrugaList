@@ -16,8 +16,10 @@
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/layoutSearchInput"
-        android:layout_width="290dp"
-        android:layout_height="60dp">
+        android:layout_height="60dp"
+        android:layout_width="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/buttonSearch">
 
         <EditText
             android:id="@+id/inputSearch"
@@ -26,24 +28,7 @@
             android:layout_marginTop="0dp"
             android:padding="16dp"
             android:inputType="text"
-            android:hint="Search by item name or store"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/unitLayout"
-        style="@style/DefTextInputLayout"
-        android:layout_width="60dp"
-        android:layout_toEndOf="@id/layoutSearchInput">
-
-        <Button
-            android:id="@+id/buttonSearch"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:drawableStart="@android:drawable/ic_menu_search"
-            android:text=""
-            android:textSize="24sp" />
+            android:hint="@string/search_hint"/>
 
     </android.support.design.widget.TextInputLayout>
 
@@ -92,6 +77,17 @@
         android:clipToPadding="false"
         tools:listitem="@layout/main_list_item_deal"
         android:layout_below="@id/layoutTypeSpinner"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="5dp" />
+
+    <Button
+        android:id="@+id/buttonSearch"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:padding="16dp"
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:text=""
+        android:textSize="24sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

@@ -67,7 +67,7 @@
                 style="@style/DefTextInputLayout"
                 android:layout_width="180dp"
                 android:layout_below="@+id/productLayout"
-                android:layout_toRightOf="@+id/priceLayout"
+                android:layout_toEndOf="@+id/priceLayout"
                 android:layout_alignParentEnd="true">
 
                 <Spinner
@@ -83,13 +83,18 @@
                 android:id="@+id/buttonLocateLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/priceLayout">
+                android:layout_below="@+id/priceLayout"
+                android:layout_margin="7dp">
 
                 <Button
                     android:id="@+id/insertLocationbtn"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:text="@string/insert_location" />
+                    android:text="@string/insert_location"
+                    android:background="@color/colorAccent"
+                    android:textColor="#ffffff"
+                    android:paddingLeft="7dp"
+                    android:paddingRight="7dp" />
 
             </android.support.design.widget.TextInputLayout>
 

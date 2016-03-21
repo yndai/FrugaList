@@ -40,14 +40,14 @@ public class UserHelper {
         return mUser;
     }
 
-    public static void clearCurrentUser( Context ctx){
+    public static void clearCurrentUser(Context ctx){
         mUser = null;
         ComplexPreferences complexPreferences = ComplexPreferences.getComplexPreferences(ctx, "user_prefs", 0);
         complexPreferences.clearObject();
         complexPreferences.commit();
     }
 
-    public static void userLogout( Context ctx){
+    public static void userLogout(Context ctx){
         UserHelper.clearCurrentUser(ctx);
         //In app Logout
         UserHelper.setLoggedIn(false);

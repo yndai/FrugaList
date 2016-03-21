@@ -16,10 +16,10 @@ import android.view.ViewGroup;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.Deal;
-import com.ryce.frugalist.model.MockDatastore;
 import com.ryce.frugalist.network.FrugalistResponse;
 import com.ryce.frugalist.network.FrugalistServiceHelper;
 import com.ryce.frugalist.util.LocationHelper;
+import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.util.Utils;
 import com.ryce.frugalist.view.list.ListSectionPagerAdapter.ListSection;
 
@@ -93,7 +93,7 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), null, false, true));
 
         // init recycler view adapter
-        mListAdapter = new ListSectionRecyclerAdapter(getContext(), new ArrayList<AbstractListing>(), ListingType.DEAL, mListSection);
+        mListAdapter = new ListSectionRecyclerAdapter(getActivity(), new ArrayList<AbstractListing>(), ListingType.DEAL, mListSection);
         mRecyclerView.setAdapter(mListAdapter);
 
         // init progress dialog
@@ -106,7 +106,7 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
             return rootView;
         }
 
-        // determine the List section type
+        // determine the List section type and fetch data accordingly
         if (mListSection == ListSection.NEARBY) {
 
             // set refresh listener
@@ -117,32 +117,37 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
                 }
             });
 
-//            List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getDeals().values());
-//
-//            mListAdapter = new ListSectionRecyclerAdapter(getContext(), items, ListingType.DEAL, mListSection);
-//            MockDatastore.getInstance().addDealsListener(mListAdapter);
-//            recyclerView.setAdapter(mListAdapter);
+            // need to wait for location helper to connect before fetching nearby deals...
+            LocationHelper.getInstance().listenToLocation(this);
 
         } else if (mListSection == ListSection.POSTED) {
 
-            List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getBookmarks().values());
+            // set refresh listener
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    executeFetchPostedDeals();
+                }
+            });
 
-            mListAdapter = new ListSectionRecyclerAdapter(getContext(), items, ListingType.DEAL, mListSection);
-            MockDatastore.getInstance().addBookmarksListener(mListAdapter);
-            mRecyclerView.setAdapter(mListAdapter);
+            // fetch posted deals
+            executeFetchPostedDeals();
+            mProgressDialog.show();
 
         } else if (mListSection == ListSection.SAVED) {
 
-            List<AbstractListing> items = new ArrayList<AbstractListing>(MockDatastore.getInstance().getBookmarks().values());
+            // set refresh listener
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    executeFetchBookmarks();
+                }
+            });
 
-            mListAdapter = new ListSectionRecyclerAdapter(getContext(), items, ListingType.DEAL, mListSection);
-            MockDatastore.getInstance().addBookmarksListener(mListAdapter);
-            mRecyclerView.setAdapter(mListAdapter);
-
+            // fetch bookmarks
+            executeFetchBookmarks();
+            mProgressDialog.show();
         }
-
-        // listen to location ready
-        LocationHelper.getInstance().listenToLocation(this);
 
         return rootView;
     }
@@ -154,27 +159,29 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
     @Override
     public void onLocationConnectionReady(Location location) {
 
+        // Fetch nearby list when location data is ready
         if (mListSection == ListSection.NEARBY) {
 
             executeFetchDealList();
             mProgressDialog.show();
 
-        } else if (mListSection == ListSection.POSTED) {
-
-
-        } else if (mListSection == ListSection.SAVED) {
-
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mListSection == ListSection.NEARBY) {
-            MockDatastore.getInstance().removeDealsListener(mListAdapter);
-        } else if (mListSection == ListSection.SAVED) {
-            MockDatastore.getInstance().removeBookmarksListener(mListAdapter);
-        }
+    /**
+     * Fetch bookmarked deals
+     */
+    private void executeFetchBookmarks() {
+        FrugalistServiceHelper.doGetBookmarksList(mFrugalistDealListCallback,
+                UserHelper.getCurrentUser(getContext()).getId());
+    }
+
+    /**
+     * Fetch user's posted deals
+     */
+    private void executeFetchPostedDeals() {
+        FrugalistServiceHelper.doGetListByAuthor(mFrugalistDealListCallback,
+                UserHelper.getCurrentUser(getContext()).getId());
     }
 
     /**
@@ -205,7 +212,6 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
 
         // replace data in recycler view
         mListAdapter.replaceData(newDealList);
-
     }
 
     /** callback for deal list */
@@ -246,4 +252,8 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
 
     };
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }

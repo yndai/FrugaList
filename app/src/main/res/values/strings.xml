@@ -16,6 +16,8 @@
     <string name="picture_not_available">Picture not available</string>
     <string name="insert_location">Choose Store Location</string>
 
+    <string name="search_hint">Search by product or store</string>
+
     <string name="create_product">Product</string>
     <string name="create_store">Store</string>
     <string name="create_price">Price</string>

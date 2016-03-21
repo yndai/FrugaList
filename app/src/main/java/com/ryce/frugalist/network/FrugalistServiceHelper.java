@@ -82,10 +82,11 @@ public class FrugalistServiceHelper {
                                           String product,
                                           Float latitude,
                                           Float longitude,
-                                          Integer radius
+                                          Integer radius,
+                                          Integer sortType
     ) {
         Call<FrugalistResponse.DealList> dealListCall =
-                getService().listByProduct(product, latitude, longitude, radius);
+                getService().listByProduct(product, latitude, longitude, radius, sortType);
 
         dealListCall.enqueue(callback);
     }
@@ -102,10 +103,11 @@ public class FrugalistServiceHelper {
                                         String store,
                                         Float latitude,
                                         Float longitude,
-                                        Integer radius
+                                        Integer radius,
+                                        Integer sortType
     ) {
         Call<FrugalistResponse.DealList> dealListCall =
-                getService().listByStore(store, latitude, longitude, radius);
+                getService().listByStore(store, latitude, longitude, radius, sortType);
 
         dealListCall.enqueue(callback);
     }

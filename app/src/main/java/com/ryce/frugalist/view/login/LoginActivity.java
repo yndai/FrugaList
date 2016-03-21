@@ -182,8 +182,8 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
                         // profile2 is the new profile
-                        onProfileReady(profile2);
-                        //onProfileReadyTesting(profile2);
+                        //onProfileReady(profile2);
+                        onProfileReadyTesting(profile2);
                         mProfileTracker.stopTracking();
                     }
                 };
@@ -193,8 +193,8 @@ public class LoginActivity extends AppCompatActivity {
             else {
                 // Profile is ready, just continue
                 Profile profile = Profile.getCurrentProfile();
-                onProfileReady(profile);
-                //onProfileReadyTesting(profile);
+                //onProfileReady(profile);
+                onProfileReadyTesting(profile);
             }
 
 

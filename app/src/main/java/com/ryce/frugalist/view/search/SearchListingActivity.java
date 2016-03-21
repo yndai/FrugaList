@@ -2,19 +2,24 @@ package com.ryce.frugalist.view.search;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.ryce.frugalist.R;
-import com.ryce.frugalist.view.list.ListSectionPagerAdapter;
 
 /**
  * Created by Roger_Wang on 2016-03-14.
  */
 public class SearchListingActivity extends AppCompatActivity {
+
+    /** Enum of sort codes */
+    public enum SortType {
+        DATE(0), RATING(1), PRICE(2);
+        public int value;
+        private SortType(int value) {this.value = value;}
+    }
 
     private Spinner mSortSpinner;
     private Spinner mTypeSpinner;

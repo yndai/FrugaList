@@ -1,7 +1,6 @@
 package com.ryce.frugalist.view.list;
 
 import android.Manifest;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,7 +17,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import com.facebook.FacebookSdk;
 import com.ryce.frugalist.R;
@@ -50,8 +48,6 @@ public class MainListActivity extends AppCompatActivity {
 
     /** the FragmentStatePagerAdapter */
     private ListSectionPagerAdapter mSectionsPagerAdapter;
-
-
 
     // callback for deal list
     Callback<FrugalistResponse.DealList> mFrugalistDealListCallback = new Callback<FrugalistResponse.DealList>() {
