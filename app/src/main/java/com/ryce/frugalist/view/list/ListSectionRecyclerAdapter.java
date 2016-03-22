@@ -248,6 +248,7 @@ public class ListSectionRecyclerAdapter
      * Update user model, adding/deleting a bookmark of this deal
      * @param userId
      * @param dealId
+     * @param add false = delete, true = add
      */
     private void executeAddOrDeleteBookmark(String userId, long dealId, boolean add) {
         FrugalistServiceHelper.doAddOrDeleteBookmark(mFrugalistUserCallback, userId, dealId, add);

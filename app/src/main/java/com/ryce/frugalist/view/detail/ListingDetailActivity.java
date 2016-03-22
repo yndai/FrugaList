@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -121,20 +122,36 @@ public class ListingDetailActivity extends AppCompatActivity {
         });
 
         // init bookmark button
-        mBookmarkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                User user = UserHelper.getCurrentUser(ListingDetailActivity.this);
-                if (!user.getBookmarks().contains(mDeal.getId())) {
-                    // if user has not already added bookmark, add it
-                    executeAddBookmark();
-                } else {
-                    // user has already added this bookmark, nothing to do
-                    Snackbar.make(findViewById(android.R.id.content), "Already in bookmarks!", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+        User user = UserHelper.getCurrentUser(ListingDetailActivity.this);
+        if (user.getBookmarks().isEmpty() || !user.getBookmarks().contains(mDeal.getId())) {
+            mBookmarkButton.setBackgroundTintList(getResources().getColorStateList(android.R.color.holo_green_light));
+            mBookmarkButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    User user = UserHelper.getCurrentUser(ListingDetailActivity.this);
+                    if (!user.getBookmarks().contains(mDeal.getId())) {
+                        // if user has not already added bookmark, add it
+                        executeAddBookmark();
+                        mBookmarkButton.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_delete));
+                        mBookmarkButton.setBackgroundTintList(getResources().getColorStateList(android.R.color.holo_red_light));; // red
+                    } else {
+                        // user has already added this bookmark, nothing to do
+                        Snackbar.make(findViewById(android.R.id.content), "Already in bookmarks!", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            mBookmarkButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // remove from bookmark and make the listener become the 'add' option
+                    executeRemoveBookmark();
+                    mBookmarkButton.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_input_add));
+                    mBookmarkButton.setBackgroundTintList(getResources().getColorStateList(android.R.color.holo_green_light));; // green
+                }
+            });
+        }
 
         // init delete button
         mDeleteButton.setOnClickListener(new View.OnClickListener() {
@@ -286,6 +303,14 @@ public class ListingDetailActivity extends AppCompatActivity {
     private void executeAddBookmark() {
         FrugalistServiceHelper.doAddOrDeleteBookmark(mFrugalistUserCallback,
                 UserHelper.getCurrentUser(this).getId(), mDeal.getId(), true);
+    }
+
+    /**
+     * Update user model, removing a bookmark of this deal
+     */
+    private void executeRemoveBookmark() {
+        FrugalistServiceHelper.doAddOrDeleteBookmark(mFrugalistUserCallback,
+                UserHelper.getCurrentUser(this).getId(), mDeal.getId(), false);
     }
 
     /**
