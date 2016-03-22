@@ -16,7 +16,7 @@ public class ListSectionPagerAdapter extends FragmentStatePagerAdapter {
      * Enum of section types
      */
     public enum ListSection {
-        NEARBY(0), POSTED(1), SAVED(2);
+        NEARBY(0), POSTED(1), SAVED(2), SEARCH(3);
         int val;
         ListSection(int val) { this.val = val; }
         public int toInteger() { return val; }

@@ -131,8 +131,8 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
             });
 
             // fetch posted deals
-            executeFetchPostedDeals();
             mProgressDialog.show();
+            executeFetchPostedDeals();
 
         } else if (mListSection == ListSection.SAVED) {
 
@@ -145,8 +145,8 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
             });
 
             // fetch bookmarks
-            executeFetchBookmarks();
             mProgressDialog.show();
+            executeFetchBookmarks();
         }
 
         return rootView;
@@ -162,8 +162,8 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
         // Fetch nearby list when location data is ready
         if (mListSection == ListSection.NEARBY) {
 
-            executeFetchDealList();
             mProgressDialog.show();
+            executeFetchDealList();
 
         }
     }

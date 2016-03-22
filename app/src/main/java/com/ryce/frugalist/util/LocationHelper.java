@@ -77,7 +77,7 @@ public class LocationHelper implements
     public void listenToLocation(LocationConnectionListener listener) {
         if (isConnected()) {
             // if connection ready, just immediately call the listener
-            listener.onLocationConnectionReady(mLocation);
+            listener.onLocationConnectionReady(getLastLocation());
         } else {
             // else queue up the listener
             listeners.add(listener);
@@ -144,7 +144,7 @@ public class LocationHelper implements
         if (isConnected()) {
             try {
                 mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            } catch (SecurityException e){/* Not handling */}
+            } catch (SecurityException e){/* Not handling here */}
         }
         return mLocation;
     }

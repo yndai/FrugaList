@@ -81,7 +81,7 @@ public interface FrugalistAPI {
      */
     @GET("deal/search/store")
     Call<FrugalistResponse.DealList> listByStore(
-            @Query("product") String store,
+            @Query("store") String store,
             @Query("latitude") Float latitude,
             @Query("longitude") Float longitude,
             @Query("radius") Integer radius,

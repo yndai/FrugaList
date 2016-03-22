@@ -102,8 +102,8 @@ public class ListingDetailActivity extends AppCompatActivity {
             Long id = (Long) getIntent().getExtras().get(ARG_LISTING_ID);
 
             // fetch deal by id
-            executeFetchDeal(id);
             mProgressDialog.show();
+            executeFetchDeal(id);
         }
 
         // init vote buttons
@@ -111,14 +111,12 @@ public class ListingDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 executeDealUpdateRating(true);
-                //mProgressDialog.show();
             }
         });
         mDownButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 executeDealUpdateRating(false);
-                //mProgressDialog.show();
             }
         });
 
@@ -130,7 +128,6 @@ public class ListingDetailActivity extends AppCompatActivity {
                 if (!user.getBookmarks().contains(mDeal.getId())) {
                     // if user has not already added bookmark, add it
                     executeAddBookmark();
-                    //mProgressDialog.show();
                 } else {
                     // user has already added this bookmark, nothing to do
                     Snackbar.make(findViewById(android.R.id.content), "Already in bookmarks!", Snackbar.LENGTH_LONG)
@@ -369,8 +366,8 @@ public class ListingDetailActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
                     // do delete
-                    executeDealDelete();
                     mProgressDialog.show();
+                    executeDealDelete();
                     dialog.cancel();
                 }
             })
