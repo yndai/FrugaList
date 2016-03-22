@@ -63,13 +63,15 @@ public class ListSectionRecyclerAdapter
                     .inflate(R.layout.main_list_item_deal, parent, false);
             return new DealViewHolder(view);
 
-        } else {
+        } else if (viewType == ListingType.EMPTY.toInteger()) {
 
-            // TODO: what is the default ??
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.main_list_item_deal, parent, false);
-            return new DealViewHolder(view);
+                    .inflate(R.layout.main_list_item_empty, parent, false);
+            return new EmptyViewHolder(view);
 
+        } else {
+            // TODO: what is the default ??
+            return null;
         }
 
     }
@@ -77,7 +79,7 @@ public class ListSectionRecyclerAdapter
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
 
-        if (mItemType == ListingType.DEAL) {
+        if (holder instanceof DealViewHolder) {
 
             final Deal deal = (Deal) mItems.get(position);
             final DealViewHolder dealHolder = (DealViewHolder) holder;
@@ -163,11 +165,19 @@ public class ListSectionRecyclerAdapter
 
     @Override
     public int getItemCount() {
+        // handle empty case
+        if (mItems.isEmpty()) {
+            return 1;
+        }
         return mItems.size();
     }
 
     @Override
     public int getItemViewType(int position) {
+        // handle empty case
+        if (mItems.isEmpty()) {
+            return ListingType.EMPTY.toInteger();
+        }
         return mItemType.toInteger();
     }
 
@@ -210,6 +220,22 @@ public class ListSectionRecyclerAdapter
             mImageView = (ImageView) view.findViewById(R.id.dealThumb);
             mBookmarkImgView = (ImageView) view.findViewById(R.id.bookmarkImg);
             mAuthorImgView = (ImageView) view.findViewById(R.id.authorImg);
+        }
+
+    }
+
+    /**
+     * Stores the view layout of an empty item
+     */
+    public class EmptyViewHolder extends RecyclerView.ViewHolder {
+
+        public final View mView;
+        public final TextView mEmptyText;
+
+        public EmptyViewHolder(View view) {
+            super(view);
+            this.mView = view;
+            this.mEmptyText = (TextView) view.findViewById(R.id.emptyText);
         }
 
     }

@@ -13,6 +13,8 @@
 
     <string name="dialog_loading">Loading...</string>
 
+    <string name="list_no_data">No results.</string>
+
     <string name="picture_not_available">Picture not available</string>
     <string name="insert_location">Choose Store Location</string>
 

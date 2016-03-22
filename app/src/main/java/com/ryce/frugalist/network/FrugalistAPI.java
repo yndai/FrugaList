@@ -14,9 +14,10 @@ import retrofit2.http.Query;
  */
 public interface FrugalistAPI {
 
-    // TODO: just a local test server for now
-    String server = "http://192.168.1.102:8888/_ah/api/frugalist/v1/";
-
+    // local test server
+    // String server = "http://192.168.1.102:8888/_ah/api/frugalist/v1/";
+    // Google Cloud server
+    String server = "https://frugalist-api.appspot.com/_ah/api/frugalist/v1/";
 
     /****************************************
      * Deal API GETs

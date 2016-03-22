@@ -110,10 +110,23 @@ public class Deal extends AbstractListing {
      * @return
      */
     public static List<AbstractListing> getDealListFromResponseList(FrugalistResponse.DealList resDealList) {
-        List<AbstractListing> dealList = new ArrayList<>(resDealList.items.size());
-        for (FrugalistResponse.Deal resDeal : resDealList.items) {
-            dealList.add(new Deal(resDeal));
+        List<AbstractListing> dealList;
+
+        if (resDealList.items == null) {
+
+            // no list was returned, means no elements found
+            dealList = new ArrayList<>();
+
+        } else {
+
+            // convert response deals into view model deals
+            dealList = new ArrayList<>(resDealList.items.size());
+            for (FrugalistResponse.Deal resDeal : resDealList.items) {
+                dealList.add(new Deal(resDeal));
+            }
+
         }
+
         return dealList;
     }
 

@@ -42,7 +42,7 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
 
     /** Enum of listing types */
     public enum ListingType {
-        NONE(-1), DEAL(0), FREEBIE(1);
+        EMPTY(-1), DEAL(0), FREEBIE(1);
         int val;
         ListingType(int val) { this.val = val; }
         public int toInteger() { return val; }
@@ -51,11 +51,11 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
     /** The fragment argument representing the section number for this fragment */
     public static final String ARG_SECTION_NUMBER = "section_number";
 
-    private ListSection mListSection;
-    private RecyclerView mRecyclerView;
-    private ListSectionRecyclerAdapter mListAdapter;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private ProgressDialog mProgressDialog;
+    ListSection mListSection;
+    RecyclerView mRecyclerView;
+    ListSectionRecyclerAdapter mListAdapter;
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    ProgressDialog mProgressDialog;
 
     /**
      * Do not call this
@@ -80,7 +80,7 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main_list, container, false);
 
-        // get swipe refresh layout and set refresh listener
+        // get swipe refresh layout
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshContainer);
 
         // get section number
