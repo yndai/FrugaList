@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.Deal;
@@ -25,6 +26,7 @@ import com.ryce.frugalist.network.FrugalistResponse;
 import com.ryce.frugalist.network.FrugalistServiceHelper;
 import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
+import com.ryce.frugalist.view.list.MainListActivity;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -50,7 +52,8 @@ public class ListingDetailActivity extends AppCompatActivity {
     private Deal mDeal;
 
     ImageView mImageView;
-    ImageView mBookmarkImg;
+    ImageView mBookmarkIconImg;
+    ImageView mAuthorIconImg;
     TextView mProductText;
     TextView mPriceText;
     TextView mCreatedText;
@@ -75,7 +78,8 @@ public class ListingDetailActivity extends AppCompatActivity {
         mProgressDialog.setMessage(getResources().getString(R.string.dialog_loading));
 
         // get views
-        mBookmarkImg = (ImageView) findViewById(R.id.bookmarkImg);
+        mBookmarkIconImg = (ImageView) findViewById(R.id.bookmarkImg);
+        mAuthorIconImg = (ImageView) findViewById(R.id.authorImg);
         mImageView = (ImageView) findViewById(R.id.detailImage);
         mProductText = (TextView) findViewById(R.id.productText);
         mPriceText = (TextView) findViewById(R.id.priceText);
@@ -106,20 +110,14 @@ public class ListingDetailActivity extends AppCompatActivity {
         mUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                executeDealUpdateRating(
-                        mDeal.getId(),
-                        UserHelper.getCurrentUser(ListingDetailActivity.this).getId(),
-                        true);
+                executeDealUpdateRating(true);
                 //mProgressDialog.show();
             }
         });
         mDownButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                executeDealUpdateRating(
-                        mDeal.getId(),
-                        UserHelper.getCurrentUser(ListingDetailActivity.this).getId(),
-                        false);
+                executeDealUpdateRating(false);
                 //mProgressDialog.show();
             }
         });
@@ -131,13 +129,21 @@ public class ListingDetailActivity extends AppCompatActivity {
                 User user = UserHelper.getCurrentUser(ListingDetailActivity.this);
                 if (!user.getBookmarks().contains(mDeal.getId())) {
                     // if user has not already added bookmark, add it
-                    executeAddBookmark(user.getId(), mDeal.getId());
+                    executeAddBookmark();
                     //mProgressDialog.show();
                 } else {
                     // user has already added this bookmark, nothing to do
                     Snackbar.make(findViewById(android.R.id.content), "Already in bookmarks!", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
+            }
+        });
+
+        // init delete button
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showConfirmDeleteDialog();
             }
         });
 
@@ -181,18 +187,20 @@ public class ListingDetailActivity extends AppCompatActivity {
         // get user
         User user = UserHelper.getCurrentUser(this);
 
-        // if user is author, enable delete button
+        // if user is author, enable delete button and show author icon
         if (deal.getAuthorId().equals(user.getId())) {
             mDeleteButton.setVisibility(View.VISIBLE);
+            mAuthorIconImg.setVisibility(View.VISIBLE);
         } else {
             mDeleteButton.setVisibility(View.GONE);
+            mAuthorIconImg.setVisibility(View.INVISIBLE);
         }
 
         // if user has bookmarked, show bookmark icon
         if (user.getBookmarks().contains(deal.getId())) {
-            mBookmarkImg.setVisibility(View.VISIBLE);
+            mBookmarkIconImg.setVisibility(View.VISIBLE);
         } else {
-            mBookmarkImg.setVisibility(View.INVISIBLE);
+            mBookmarkIconImg.setVisibility(View.INVISIBLE);
         }
 
         // set state of vote buttons
@@ -277,11 +285,10 @@ public class ListingDetailActivity extends AppCompatActivity {
 
     /**
      * Update user model, adding a bookmark of this deal
-     * @param userId
-     * @param dealId
      */
-    private void executeAddBookmark(String userId, long dealId) {
-        FrugalistServiceHelper.doAddOrDeleteBookmark(mFrugalistUserCallback, userId, dealId, true);
+    private void executeAddBookmark() {
+        FrugalistServiceHelper.doAddOrDeleteBookmark(mFrugalistUserCallback,
+                UserHelper.getCurrentUser(this).getId(), mDeal.getId(), true);
     }
 
     /**
@@ -296,7 +303,7 @@ public class ListingDetailActivity extends AppCompatActivity {
         UserHelper.setCurrentUser(user, this);
 
         // make bookmark icon visible
-        mBookmarkImg.setVisibility(View.VISIBLE);
+        mBookmarkIconImg.setVisibility(View.VISIBLE);
 
         // show notification for bookmark
         Snackbar.make(findViewById(android.R.id.content), "Bookmarked!", Snackbar.LENGTH_LONG)
@@ -340,11 +347,12 @@ public class ListingDetailActivity extends AppCompatActivity {
      **********************************************************************/
 
     /**
-     * Update deal rating
-     * @param id
+     * Update Deal rating
+     * @param upvote
      */
-    private void executeDealUpdateRating(long id, String userId, boolean upvote) {
-        FrugalistServiceHelper.doUpdateDealRating(mFrugalistDealCallback, id, userId, upvote);
+    private void executeDealUpdateRating(boolean upvote) {
+        FrugalistServiceHelper.doUpdateDealRating(mFrugalistDealCallback,
+                mDeal.getId(), UserHelper.getCurrentUser(this).getId(), upvote);
     }
 
     /**********************************************************************
@@ -356,22 +364,78 @@ public class ListingDetailActivity extends AppCompatActivity {
      */
     private void showConfirmDeleteDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder
-                .setMessage("Are you sure you wish to delete this listing?")
-                .setPositiveButton("Yes",  new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Yes-code
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog,int id) {
-                        dialog.cancel();
-                    }
-                })
-                .show();
+        builder.setMessage("Are you sure you wish to delete this listing?")
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    // do delete
+                    executeDealDelete();
+                    mProgressDialog.show();
+                    dialog.cancel();
+                }
+            })
+            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            })
+            .show();
     }
+
+    /**
+     * Delete this deal
+     */
+    private void executeDealDelete() {
+        FrugalistServiceHelper.doDeleteDeal(mFrugalistDeleteCallback, mDeal.getId());
+    }
+
+    /**
+     * Called after deal deletion complete
+     */
+    private void onDealDeleted() {
+
+        // show deleted message
+        Toast.makeText(this, "Deal deleted", Toast.LENGTH_LONG).show();
+
+        // go back to main list
+        Intent intent = new Intent(this, MainListActivity.class);
+        startActivity(intent);
+        finish();
+
+    }
+
+    /** Callback for Frugalist API User fetch */
+    Callback<FrugalistResponse.ResponseMsg> mFrugalistDeleteCallback = new Callback<FrugalistResponse.ResponseMsg>() {
+        @Override
+        public void onResponse(Call<FrugalistResponse.ResponseMsg> call,
+                               Response<FrugalistResponse.ResponseMsg> response
+        ) {
+            if (response.isSuccess()) {
+
+                // User fetched
+                FrugalistResponse.ResponseMsg msg = response.body();
+                Log.i(TAG, msg.msg);
+                onDealDeleted();
+
+            } else {
+                try {
+                    Log.i(TAG, "Error: " + response.errorBody().string());
+                } catch (IOException e) {/* not handling */}
+            }
+
+            mProgressDialog.dismiss();
+        }
+
+        @Override
+        public void onFailure(Call<FrugalistResponse.ResponseMsg> call, Throwable t) {
+            Log.i(TAG, "Error: " + t.getMessage());
+            Snackbar.make(findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+
+            mProgressDialog.dismiss();
+        }
+    };
 
     /**********************************************************************
      * Showing address in Maps app

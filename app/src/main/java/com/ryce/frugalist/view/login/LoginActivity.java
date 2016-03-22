@@ -82,6 +82,10 @@ public class LoginActivity extends AppCompatActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**********************************************************************
+     * Frugalist User fetch/add
+     **********************************************************************/
+
     /**
      * Called after User is fetched from Frugalist API
      * @param responseUser
@@ -94,40 +98,7 @@ public class LoginActivity extends AppCompatActivity {
         UserHelper.setLoggedIn(true);
 
         // show welcome message
-        Toast.makeText(LoginActivity.this,"Welcome " + user.getName(), Toast.LENGTH_LONG).show();
-
-        // switch to main list view
-        Intent intent = new Intent(LoginActivity.this, MainListActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    /**
-     * Called after Facebook Profile is ready to use
-     * @param profile
-     */
-    private void onProfileReady(Profile profile) {
-
-        // immediately call Frugalist API to get user data (or create)
-        FrugalistServiceHelper.doGetOrCreateUser(mFrugalistUserCallback, profile.getId(), profile.getName());
-
-    }
-
-    /**
-     * For testing, no remote DB connection
-     * @param profile
-     */
-    private void onProfileReadyTesting(Profile profile) {
-        User user = new User(profile.getId(), profile.getName(), new HashSet<Long>());
-
-        // set User in preferences
-        UserHelper.setCurrentUser(user, LoginActivity.this);
-        UserHelper.setLoggedIn(true);
-
-        // show welcome message
-        Toast.makeText(LoginActivity.this,"Welcome " + user.getName(), Toast.LENGTH_LONG).show();
-
-        mProgressDialog.dismiss();
+        Toast.makeText(LoginActivity.this, "Welcome " + user.getName(), Toast.LENGTH_LONG).show();
 
         // switch to main list view
         Intent intent = new Intent(LoginActivity.this, MainListActivity.class);
@@ -168,6 +139,43 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
+    /**********************************************************************
+     * Facebook Profile fetch
+     **********************************************************************/
+
+    /**
+     * Called after Facebook Profile is ready to use
+     * @param profile
+     */
+    private void onProfileReady(Profile profile) {
+
+        // immediately call Frugalist API to get user data (or create)
+        FrugalistServiceHelper.doGetOrCreateUser(mFrugalistUserCallback, profile.getId(), profile.getName());
+
+    }
+
+    /**
+     * For testing, no remote DB connection
+     * @param profile
+     */
+    private void onProfileReadyTesting(Profile profile) {
+        User user = new User(profile.getId(), profile.getName(), new HashSet<Long>());
+
+        // set User in preferences
+        UserHelper.setCurrentUser(user, LoginActivity.this);
+        UserHelper.setLoggedIn(true);
+
+        // show welcome message
+        Toast.makeText(LoginActivity.this,"Welcome " + user.getName(), Toast.LENGTH_LONG).show();
+
+        mProgressDialog.dismiss();
+
+        // switch to main list view
+        Intent intent = new Intent(LoginActivity.this, MainListActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     /** Callback for Facebook login */
     private FacebookCallback<LoginResult> mCallBack = new FacebookCallback<LoginResult>() {
         @Override
@@ -182,8 +190,8 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
                         // profile2 is the new profile
-                        //onProfileReady(profile2);
-                        onProfileReadyTesting(profile2);
+                        onProfileReady(profile2);
+                        //onProfileReadyTesting(profile2);
                         mProfileTracker.stopTracking();
                     }
                 };
@@ -193,8 +201,8 @@ public class LoginActivity extends AppCompatActivity {
             else {
                 // Profile is ready, just continue
                 Profile profile = Profile.getCurrentProfile();
-                //onProfileReady(profile);
-                onProfileReadyTesting(profile);
+                onProfileReady(profile);
+                //onProfileReadyTesting(profile);
             }
 
 

@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 public class Deal extends AbstractListing {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy", Locale.CANADA);
 
     private String price;
     private String unit;
@@ -87,7 +88,7 @@ public class Deal extends AbstractListing {
      ****************************************/
 
     public String getFormattedPrice() {
-        return "$" + price + "/" + unit;
+        return price + "/" + unit;
     }
 
     public String getFormattedRating() {

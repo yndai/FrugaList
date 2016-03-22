@@ -1,7 +1,6 @@
 package com.ryce.frugalist.model;
 
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * Created by Tony on 2016-02-07.
@@ -10,7 +9,6 @@ import java.util.UUID;
  */
 public abstract class AbstractListing {
 
-    private UUID uuid;
     private Long id;
     private String authorId;
     private Date created;
@@ -35,7 +33,6 @@ public abstract class AbstractListing {
     }
 
     public AbstractListing(String imageUrl, String product, String address) {
-        uuid = UUID.randomUUID();
         this.imageUrl = imageUrl;
         this.product = product;
         this.address = address;
@@ -77,10 +74,6 @@ public abstract class AbstractListing {
 
     public String getThumbnailUrl() {
         return thumbnailUrl;
-    }
-
-    public UUID getUuid() {
-        return uuid;
     }
 
 }

@@ -5,7 +5,7 @@ package com.ryce.frugalist.network;
  */
 public class FrugalistRequest {
 
-    public class Deal {
+    public static class Deal {
         public String authorId;
         public String product;
         public String imageUrl;

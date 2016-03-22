@@ -88,11 +88,20 @@ public class ListSectionRecyclerAdapter
             dealHolder.mRatingTextView.setText(deal.getFormattedRating());
             dealHolder.mRatingTextView.setTextColor(deal.getRatingColour());
 
+            User user = UserHelper.getCurrentUser(mActivity);
+
             // mark if deal has been bookmarked
-            if (UserHelper.getCurrentUser(mActivity).getBookmarks().contains(deal.getId())) {
+            if (user.getBookmarks().contains(deal.getId())) {
                 dealHolder.mBookmarkImgView.setVisibility(View.VISIBLE);
             } else {
                 dealHolder.mBookmarkImgView.setVisibility(View.INVISIBLE);
+            }
+
+            // mark if user is author or not
+            if (deal.getAuthorId().equals(user.getId())) {
+                dealHolder.mAuthorImgView.setVisibility(View.VISIBLE);
+            } else {
+                dealHolder.mAuthorImgView.setVisibility(View.INVISIBLE);
             }
 
             // load image via URL
@@ -177,16 +186,6 @@ public class ListSectionRecyclerAdapter
         notifyDataSetChanged();
     }
 
-    public void addItem(Deal deal) {
-        mItems.add(deal);
-        notifyDataSetChanged();
-    }
-
-    public void removeItem(Deal deal) {
-        mItems.remove(deal);
-        notifyDataSetChanged();
-    }
-
     /**
      * Stores the view layout for a deal list item
      */
@@ -199,6 +198,7 @@ public class ListSectionRecyclerAdapter
         public final TextView mRatingTextView;
         public final ImageView mImageView;
         public final ImageView mBookmarkImgView;
+        public final ImageView mAuthorImgView;
 
         public DealViewHolder(View view) {
             super(view);
@@ -209,6 +209,7 @@ public class ListSectionRecyclerAdapter
             mRatingTextView = (TextView) view.findViewById(R.id.ratingText);
             mImageView = (ImageView) view.findViewById(R.id.dealThumb);
             mBookmarkImgView = (ImageView) view.findViewById(R.id.bookmarkImg);
+            mAuthorImgView = (ImageView) view.findViewById(R.id.authorImg);
         }
 
     }

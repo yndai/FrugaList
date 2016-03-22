@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class FrugalistResponse {
 
-    public class Deal {
+    public static class Deal {
         public Long id;
         public String product;
         public String price;
@@ -28,20 +28,20 @@ public class FrugalistResponse {
         public String description;
     }
 
-    public class DealList {
+    public static class DealList {
         public List<Deal> items;
     }
 
-    public class ResponseMsg {
+    public static class ResponseMsg {
         public String msg;
     }
 
-    public class GeoPt {
+    public static class GeoPt {
         public Float latitude;
         public Float longitude;
     }
 
-    public class User {
+    public static class User {
         public String id;
         public String name;
         public Set<Long> bookmarks;
