@@ -3,6 +3,7 @@ package com.ryce.frugalist.network;
 import retrofit2.Call;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
@@ -30,13 +31,18 @@ public interface FrugalistAPI {
      * @return
      */
     @GET("deal")
-    Call<FrugalistResponse.Deal> getDealById(@Query("id") Long id);
+    Call<FrugalistResponse.Deal> getDealById(
+            @Header("Authorization") String auth,
+            @Query("id") Long id
+    );
 
     /**
      * List all deals
      */
     @GET("deal/list")
-    Call<FrugalistResponse.DealList> listDeals();
+    Call<FrugalistResponse.DealList> listDeals(
+            @Header("Authorization") String auth
+    );
 
     /**
      * List nearest deals to a center point with given radius
@@ -48,6 +54,7 @@ public interface FrugalistAPI {
      */
     @GET("deal/list/near")
     Call<FrugalistResponse.DealList> listNearestDeals(
+            @Header("Authorization") String auth,
             @Query("latitude") Float latitude,
             @Query("longitude") Float longitude,
             @Query("radius") Integer radius
@@ -64,6 +71,7 @@ public interface FrugalistAPI {
      */
     @GET("deal/search/product")
     Call<FrugalistResponse.DealList> listByProduct(
+            @Header("Authorization") String auth,
             @Query("product") String product,
             @Query("latitude") Float latitude,
             @Query("longitude") Float longitude,
@@ -82,6 +90,7 @@ public interface FrugalistAPI {
      */
     @GET("deal/search/store")
     Call<FrugalistResponse.DealList> listByStore(
+            @Header("Authorization") String auth,
             @Query("store") String store,
             @Query("latitude") Float latitude,
             @Query("longitude") Float longitude,
@@ -97,6 +106,7 @@ public interface FrugalistAPI {
      */
     @GET("deal/list/byauthor")
     Call<FrugalistResponse.DealList> listByAuthor(
+            @Header("Authorization") String auth,
             @Query("authorId") String authorId
     );
 
@@ -108,6 +118,7 @@ public interface FrugalistAPI {
      */
     @GET("deal/list/bookmarks")
     Call<FrugalistResponse.DealList> listBookmarks(
+            @Header("Authorization") String auth,
             @Query("userId") String userId
     );
 
@@ -132,6 +143,7 @@ public interface FrugalistAPI {
      */
     @POST("deal/add")
     Call<FrugalistResponse.Deal> addDeal(
+            @Header("Authorization") String auth,
             @Query("authorId") String authorId,
             @Query("product") String product,
             @Query("imageUrl") String imageUrl,
@@ -158,6 +170,7 @@ public interface FrugalistAPI {
      */
     @PUT("deal/update/rating")
     Call<FrugalistResponse.Deal> updateDealRating(
+            @Header("Authorization") String auth,
             @Query("id") Long id,
             @Query("userId") String userId,
             @Query("upvote") Boolean upvote
@@ -175,6 +188,7 @@ public interface FrugalistAPI {
      */
     @DELETE("deal/delete")
     Call<FrugalistResponse.ResponseMsg> deleteDeal(
+            @Header("Authorization") String auth,
             @Query("id") Long id
     );
 
@@ -191,6 +205,7 @@ public interface FrugalistAPI {
      */
     @GET("user/getOrCreate")
     Call<FrugalistResponse.User> getUserOrCreate(
+            @Header("Authorization") String auth,
             @Query("id") String id,
             @Query("name") String name
     );
@@ -208,6 +223,7 @@ public interface FrugalistAPI {
      */
     @POST("user/add")
     Call<FrugalistResponse.User> addUser(
+            @Header("Authorization") String auth,
             @Query("id") String id,
             @Query("name") String name
     );
@@ -226,6 +242,7 @@ public interface FrugalistAPI {
      */
     @PUT("user/update/bookmark")
     Call<FrugalistResponse.User> addOrDeleteUserBookmark(
+            @Header("Authorization") String auth,
             @Query("id") String id,
             @Query("dealId") Long dealId,
             @Query("add") Boolean add
