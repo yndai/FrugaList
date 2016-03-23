@@ -20,6 +20,11 @@
 
         <uses-library android:name="com.google.android.maps" />
 
+        <provider
+            android:authorities="com.facebook.app.FacebookContentProvider968057826611427"
+            android:name="com.facebook.FacebookContentProvider"
+            android:exported="true"/>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAuA-wISLkQKSNR-cB0x-E7TmwstvTiROI"/>
@@ -37,6 +42,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".view.detail.ListingDetailActivity"
             android:label="@string/title_activity_listing_detail"
@@ -45,6 +51,13 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ryce.frugalist.view.list.MainListActivity" />
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs "com.ryce.FrugaList://" -->
+                <data android:scheme="com.ryce.FrugaList" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -81,6 +94,7 @@
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+
     </application>
 
 </manifest>

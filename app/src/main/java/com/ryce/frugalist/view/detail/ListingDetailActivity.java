@@ -22,6 +22,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareButton;
+import com.facebook.share.widget.ShareDialog;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.Deal;
 import com.ryce.frugalist.model.User;
@@ -36,6 +41,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import bolts.AppLinks;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -66,9 +72,15 @@ public class ListingDetailActivity extends AppCompatActivity {
     TextView mAddressText;
     ImageButton mUpButton;
     ImageButton mDownButton;
+
     Button mDeleteButton;
     FloatingActionButton mBookmarkButton;
     ProgressDialog mProgressDialog;
+
+    // for the facebook sharing
+    CallbackManager callbackManager;
+    ShareDialog shareDialog;
+    ShareButton mShareButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +107,7 @@ public class ListingDetailActivity extends AppCompatActivity {
         mUpButton = (ImageButton) findViewById(R.id.upButton);
         mDownButton = (ImageButton) findViewById(R.id.downButton);
         mBookmarkButton = (FloatingActionButton) findViewById(R.id.fabBookmark);
+        mShareButton = (ShareButton) findViewById(R.id.fb_share_button);
 
         // get type of listing we are displaying
         mType = (ListingType) getIntent().getExtras().get(ARG_LISTING_TYPE);
@@ -139,6 +152,17 @@ public class ListingDetailActivity extends AppCompatActivity {
             }
         });
 
+        // init facebook SDK for the share button's dialog
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this); // initialize facebook shareDialog
+
+        // catches the app requests for individual deals
+        Uri targetUrl = AppLinks.getTargetUrlFromInboundIntent(this, getIntent());
+        if (targetUrl != null) {
+            Log.i("Activity", "App Link Target URL: " + targetUrl.toString());
+        }
+
         // init delete button
         mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -161,6 +185,12 @@ public class ListingDetailActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -257,6 +287,16 @@ public class ListingDetailActivity extends AppCompatActivity {
                 mDownButton.setBackgroundColor(DISABLED_VOTE_COLOR);
             }
         }
+
+        // activates the fb share button
+        ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                .setContentTitle("FrugaList - Share your favourite deals!")
+                .setContentDescription(
+                        "INSERT DESCRIPTION HERE")
+                .setImageUrl(Uri.parse(mDeal.getImageUrl()))
+                .setContentUrl(Uri.parse("https://fb.me/988753441208532"))
+                .build();
+        mShareButton.setShareContent(linkContent); // enables the button
     }
 
     /**********************************************************************
