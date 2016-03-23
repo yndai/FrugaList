@@ -36,7 +36,7 @@ public class FrugalistServiceHelper {
      */
     public static void doGetDealById(Callback<FrugalistResponse.Deal> callback, Long id) {
 
-        Call<FrugalistResponse.Deal> dealCall = getService().getDealById(id);
+        Call<FrugalistResponse.Deal> dealCall = getService().getDealById(FRUGALIST_CLIENT_ID, id);
 
         dealCall.enqueue(callback);
     }
@@ -47,7 +47,7 @@ public class FrugalistServiceHelper {
      */
     public static void doGetDealList(Callback<FrugalistResponse.DealList> callback) {
 
-        Call<FrugalistResponse.DealList> dealListCall = getService().listDeals();
+        Call<FrugalistResponse.DealList> dealListCall = getService().listDeals(FRUGALIST_CLIENT_ID);
 
         dealListCall.enqueue(callback);
     }
@@ -65,7 +65,7 @@ public class FrugalistServiceHelper {
                                     Integer radius
     ) {
         Call<FrugalistResponse.DealList> dealListCall =
-                getService().listNearestDeals(latitude, longitude, radius);
+                getService().listNearestDeals(FRUGALIST_CLIENT_ID, latitude, longitude, radius);
 
         dealListCall.enqueue(callback);
     }
@@ -86,7 +86,8 @@ public class FrugalistServiceHelper {
                                           Integer sortType
     ) {
         Call<FrugalistResponse.DealList> dealListCall =
-                getService().listByProduct(product, latitude, longitude, radius, sortType);
+                getService().listByProduct(
+                        FRUGALIST_CLIENT_ID,product, latitude, longitude, radius, sortType);
 
         dealListCall.enqueue(callback);
     }
@@ -107,7 +108,8 @@ public class FrugalistServiceHelper {
                                         Integer sortType
     ) {
         Call<FrugalistResponse.DealList> dealListCall =
-                getService().listByStore(store, latitude, longitude, radius, sortType);
+                getService().listByStore(
+                        FRUGALIST_CLIENT_ID, store, latitude, longitude, radius, sortType);
 
         dealListCall.enqueue(callback);
     }
@@ -119,7 +121,8 @@ public class FrugalistServiceHelper {
      */
     public static void doGetListByAuthor(Callback<FrugalistResponse.DealList> callback, String authorId) {
 
-        Call<FrugalistResponse.DealList> dealListCall = getService().listByAuthor(authorId);
+        Call<FrugalistResponse.DealList> dealListCall = getService()
+                .listByAuthor(FRUGALIST_CLIENT_ID, authorId);
 
         dealListCall.enqueue(callback);
     }
@@ -131,7 +134,8 @@ public class FrugalistServiceHelper {
      */
     public static void doGetBookmarksList(Callback<FrugalistResponse.DealList> callback, String userId) {
 
-        Call<FrugalistResponse.DealList> dealListCall = getService().listBookmarks(userId);
+        Call<FrugalistResponse.DealList> dealListCall = getService()
+                .listBookmarks(FRUGALIST_CLIENT_ID, userId);
 
         dealListCall.enqueue(callback);
     }
@@ -144,7 +148,7 @@ public class FrugalistServiceHelper {
     public static void doPostDeal(Callback<FrugalistResponse.Deal> callback,
                                   FrugalistRequest.Deal deal
     ) {
-        Call<FrugalistResponse.Deal> dealCall = getService().addDeal(
+        Call<FrugalistResponse.Deal> dealCall = getService().addDeal(FRUGALIST_CLIENT_ID,
                 deal.authorId, deal.product, deal.imageUrl, deal.address, deal.latitude,
                 deal.longitude, deal.price, deal.unit, deal.store, deal.description);
 
@@ -163,7 +167,8 @@ public class FrugalistServiceHelper {
                                           String userId,
                                           Boolean upvote
     ) {
-        Call<FrugalistResponse.Deal> dealCall = getService().updateDealRating(id, userId, upvote);
+        Call<FrugalistResponse.Deal> dealCall = getService()
+                .updateDealRating(FRUGALIST_CLIENT_ID, id, userId, upvote);
 
         dealCall.enqueue(callback);
     }
@@ -175,7 +180,8 @@ public class FrugalistServiceHelper {
      */
     public static void doDeleteDeal(Callback<FrugalistResponse.ResponseMsg> callback, Long id) {
 
-        Call<FrugalistResponse.ResponseMsg> dealCall = getService().deleteDeal(id);
+        Call<FrugalistResponse.ResponseMsg> dealCall = getService()
+                .deleteDeal(FRUGALIST_CLIENT_ID, id);
 
         dealCall.enqueue(callback);
     }
@@ -194,7 +200,8 @@ public class FrugalistServiceHelper {
                                   String id,
                                   String name
     ) {
-        Call<FrugalistResponse.User> userCall = getService().getUserOrCreate(id, name);
+        Call<FrugalistResponse.User> userCall = getService()
+                .getUserOrCreate(FRUGALIST_CLIENT_ID, id, name);
 
         userCall.enqueue(callback);
     }
@@ -212,7 +219,8 @@ public class FrugalistServiceHelper {
                                              Boolean add
     ) {
         Call<FrugalistResponse.User> userCall = getService()
-                .addOrDeleteUserBookmark(id, dealId, add);
+                .addOrDeleteUserBookmark(
+                        FRUGALIST_CLIENT_ID, id, dealId, add);
 
         userCall.enqueue(callback);
     }

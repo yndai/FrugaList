@@ -6,32 +6,23 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.facebook.FacebookSdk;
 import com.ryce.frugalist.R;
-import com.ryce.frugalist.network.FrugalistResponse;
 import com.ryce.frugalist.util.LocationHelper;
 import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.view.create.CreateListingActivity;
 import com.ryce.frugalist.view.login.LoginActivity;
 import com.ryce.frugalist.view.search.SearchListingActivity;
-
-import java.io.IOException;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainListActivity extends AppCompatActivity {
 
@@ -48,70 +39,6 @@ public class MainListActivity extends AppCompatActivity {
 
     /** the FragmentStatePagerAdapter */
     private ListSectionPagerAdapter mSectionsPagerAdapter;
-
-    // callback for deal list
-    Callback<FrugalistResponse.DealList> mFrugalistDealListCallback = new Callback<FrugalistResponse.DealList>() {
-        @Override
-        public void onResponse(
-                Call<FrugalistResponse.DealList> call,
-                Response<FrugalistResponse.DealList> response
-        ) {
-
-            if (response.isSuccess()) {
-
-                FrugalistResponse.DealList deals = response.body();
-                Log.i(TAG, deals.toString());
-
-            } else {
-
-                try {
-                    Log.i(TAG, "Error: " + response.errorBody().string());
-                } catch (IOException e) {
-                    // not handling
-                }
-            }
-        }
-
-        @Override
-        public void onFailure(Call<FrugalistResponse.DealList> call, Throwable t) {
-            Log.i(TAG, "Error: " + t.getMessage());
-            Snackbar.make(findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-        }
-
-    };
-
-    // callback for deal
-    Callback<FrugalistResponse.Deal> mFrugalistDealCallback = new Callback<FrugalistResponse.Deal>() {
-        @Override
-        public void onResponse(
-                Call<FrugalistResponse.Deal> call,
-                Response<FrugalistResponse.Deal> response
-        ) {
-
-            if (response.isSuccess()) {
-
-                FrugalistResponse.Deal deal = response.body();
-                Log.i(TAG, deal.toString());
-
-            } else {
-
-                try {
-                    Log.i(TAG, "Error: " + response.errorBody().string());
-                } catch (IOException e) {
-                    // not handling
-                }
-            }
-        }
-
-        @Override
-        public void onFailure(Call<FrugalistResponse.Deal> call, Throwable t) {
-            Log.i(TAG, "Error: " + t.getMessage());
-            Snackbar.make(findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-        }
-
-    };
 
     /** The {@link ViewPager} that will host the section contents. */
     private ViewPager mViewPager;
@@ -157,19 +84,9 @@ public class MainListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-//                if (LocationHelper.getInstance(MainListActivity.this).isConnected()) {
-//                    Location loc = LocationHelper.getInstance(MainListActivity.this).getLastLocation();
-//                    FrugalistServiceHelper.getInstance().doGetNearbyDealList(
-//                            mFrugalistDealListCallback, (float) loc.getLatitude(), (float) loc.getLongitude(), 5);
-//                }
-//
-//                FrugalistServiceHelper.getInstance().doGetDealById(mFrugalistDealCallback, 5981343255101440L);
-
                 Context context = view.getContext();
                 Intent intent = new Intent(context, CreateListingActivity.class);
                 context.startActivity(intent);
-                Log.i(TAG, LocationHelper.getInstance().getLastLocation().toString());
             }
         });
     }
