@@ -17,9 +17,11 @@ import android.widget.Spinner;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.Deal;
+import com.ryce.frugalist.model.Settings;
 import com.ryce.frugalist.network.FrugalistResponse;
 import com.ryce.frugalist.network.FrugalistServiceHelper;
 import com.ryce.frugalist.util.LocationHelper;
+import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.util.Utils;
 import com.ryce.frugalist.view.list.DividerItemDecoration;
 import com.ryce.frugalist.view.list.ListSectionFragment;
@@ -157,6 +159,7 @@ public class SearchListingActivity extends AppCompatActivity
 
         String searchTerm = mInputSearch.getText().toString();
         Location location = LocationHelper.getInstance().getLastLocation();
+        Settings settings = UserHelper.getUserSettings(this);
         int sortType = SORT_TYPE[mSortSpinner.getSelectedItemPosition()];
 
         // if we don't have location, just stop
@@ -170,12 +173,14 @@ public class SearchListingActivity extends AppCompatActivity
         if (mTypeSpinner.getSelectedItemPosition() == SearchType.PRODUCT.value) {
 
             FrugalistServiceHelper.doGetListByProduct(mFrugalistDealListCallback, searchTerm,
-                    (float) location.getLatitude(), (float) location.getLongitude(), 5, sortType);
+                    (float) location.getLatitude(), (float) location.getLongitude(),
+                    settings.getSearchRadius(), sortType, settings.getRatingThreshold());
 
         } else if (mTypeSpinner.getSelectedItemPosition() == SearchType.STORE.value) {
 
             FrugalistServiceHelper.doGetListByStore(mFrugalistDealListCallback, searchTerm,
-                    (float) location.getLatitude(), (float) location.getLongitude(), 5, sortType);
+                    (float) location.getLatitude(), (float) location.getLongitude(),
+                    settings.getSearchRadius(), sortType, settings.getRatingThreshold());
         }
     }
 

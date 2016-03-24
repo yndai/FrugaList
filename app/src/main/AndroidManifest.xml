@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ryce.frugalist" >
+    package="com.ryce.frugalist">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -9,7 +9,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -17,21 +20,19 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <uses-library android:name="com.google.android.maps" />
 
         <provider
-            android:authorities="com.facebook.app.FacebookContentProvider968057826611427"
             android:name="com.facebook.FacebookContentProvider"
-            android:exported="true"/>
+            android:authorities="com.facebook.app.FacebookContentProvider968057826611427"
+            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAuA-wISLkQKSNR-cB0x-E7TmwstvTiROI"/>
-
+            android:value="AIzaSyAuA-wISLkQKSNR-cB0x-E7TmwstvTiROI" />
         <meta-data
-            android:name="com.facebook.sdk.ApplicationId" 
-            android:value="@string/facebook_app_id"/>
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
 
         <activity
             android:name=".view.list.MainListActivity"
@@ -39,10 +40,10 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".view.detail.ListingDetailActivity"
             android:label="@string/title_activity_listing_detail"
@@ -51,15 +52,16 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ryce.frugalist.view.list.MainListActivity" />
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs "com.ryce.FrugaList://" -->
                 <data android:scheme="com.ryce.FrugaList" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".view.create.CreateListingActivity"
             android:label="@string/title_activity_create_listing"
@@ -71,15 +73,11 @@
                 android:name="com.google.android.gms.version"
                 android:value="@integer/google_play_services_version" />
         </activity>
-
         <activity
             android:name="com.facebook.FacebookActivity"
-            android:configChanges=
-                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:label="@string/app_name">
-        </activity>
-
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
         <activity
             android:name=".view.search.SearchListingActivity"
             android:label="@string/title_activity_search"
@@ -88,13 +86,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ryce.frugalist.view.list.MainListActivity" />
         </activity>
-
         <activity
             android:name=".view.login.LoginActivity"
             android:label="@string/title_activity_login"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".view.list.MainListActivity">
 
+        </activity>
+        <activity
+            android:name=".view.settings.SettingsActivity"
+            android:label="@string/title_activity_settings">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ryce.frugalist.view.list.MainListActivity" />
+        </activity>
     </application>
 
 </manifest>

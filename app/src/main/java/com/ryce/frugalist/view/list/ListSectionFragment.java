@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.model.AbstractListing;
 import com.ryce.frugalist.model.Deal;
+import com.ryce.frugalist.model.Settings;
 import com.ryce.frugalist.network.FrugalistResponse;
 import com.ryce.frugalist.network.FrugalistServiceHelper;
 import com.ryce.frugalist.util.LocationHelper;
@@ -192,13 +193,18 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
         // get current location
         Location loc = LocationHelper.getInstance().getLastLocation();
 
+        // get search radius
+        Settings settings = UserHelper.getUserSettings(getContext());
+
         // if location not available, just get all deals
         if (loc != null) {
             FrugalistServiceHelper.doGetNearbyDealList(mFrugalistDealListCallback,
-                    (float) loc.getLatitude(), (float) loc.getLongitude(), /* TODO: HARD CODED! */5);
+                    (float) loc.getLatitude(), (float) loc.getLongitude(),
+                    settings.getSearchRadius(), settings.getRatingThreshold());
         } else {
             Log.i(TAG, "Location not available");
-            FrugalistServiceHelper.doGetDealList(mFrugalistDealListCallback);
+            FrugalistServiceHelper.doGetDealList(mFrugalistDealListCallback,
+                    settings.getRatingThreshold());
         }
     }
 

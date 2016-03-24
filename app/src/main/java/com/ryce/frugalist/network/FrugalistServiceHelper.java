@@ -45,9 +45,11 @@ public class FrugalistServiceHelper {
      * GET list of deals
      * @param callback
      */
-    public static void doGetDealList(Callback<FrugalistResponse.DealList> callback) {
+    public static void doGetDealList(Callback<FrugalistResponse.DealList> callback,
+                                     Integer ratingThreshold) {
 
-        Call<FrugalistResponse.DealList> dealListCall = getService().listDeals(FRUGALIST_CLIENT_ID);
+        Call<FrugalistResponse.DealList> dealListCall = getService().listDeals(
+                FRUGALIST_CLIENT_ID, ratingThreshold);
 
         dealListCall.enqueue(callback);
     }
@@ -60,12 +62,14 @@ public class FrugalistServiceHelper {
      * @param radius
      */
     public static void doGetNearbyDealList(Callback<FrugalistResponse.DealList> callback,
-                                    Float latitude,
-                                    Float longitude,
-                                    Integer radius
+                                        Float latitude,
+                                        Float longitude,
+                                        Integer radius,
+                                        Integer ratingThreshold
     ) {
         Call<FrugalistResponse.DealList> dealListCall =
-                getService().listNearestDeals(FRUGALIST_CLIENT_ID, latitude, longitude, radius);
+                getService().listNearestDeals(FRUGALIST_CLIENT_ID, latitude, longitude,
+                        radius, ratingThreshold);
 
         dealListCall.enqueue(callback);
     }
@@ -83,11 +87,13 @@ public class FrugalistServiceHelper {
                                           Float latitude,
                                           Float longitude,
                                           Integer radius,
-                                          Integer sortType
+                                          Integer sortType,
+                                          Integer ratingThreshold
     ) {
         Call<FrugalistResponse.DealList> dealListCall =
                 getService().listByProduct(
-                        FRUGALIST_CLIENT_ID,product, latitude, longitude, radius, sortType);
+                        FRUGALIST_CLIENT_ID,product, latitude, longitude, radius,
+                        sortType, ratingThreshold);
 
         dealListCall.enqueue(callback);
     }
@@ -105,11 +111,13 @@ public class FrugalistServiceHelper {
                                         Float latitude,
                                         Float longitude,
                                         Integer radius,
-                                        Integer sortType
+                                        Integer sortType,
+                                        Integer ratingThreshold
     ) {
         Call<FrugalistResponse.DealList> dealListCall =
                 getService().listByStore(
-                        FRUGALIST_CLIENT_ID, store, latitude, longitude, radius, sortType);
+                        FRUGALIST_CLIENT_ID, store, latitude, longitude, radius,
+                        sortType, ratingThreshold);
 
         dealListCall.enqueue(callback);
     }

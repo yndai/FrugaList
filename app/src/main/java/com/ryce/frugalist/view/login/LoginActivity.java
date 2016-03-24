@@ -94,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         User user = new User(responseUser);
 
         // set User in preferences
-        UserHelper.setCurrentUser(user, LoginActivity.this);
+        UserHelper.saveCurrentUser(user, LoginActivity.this);
         UserHelper.setLoggedIn(true);
 
         // show welcome message
@@ -162,7 +162,7 @@ public class LoginActivity extends AppCompatActivity {
         User user = new User(profile.getId(), profile.getName(), new HashSet<Long>());
 
         // set User in preferences
-        UserHelper.setCurrentUser(user, LoginActivity.this);
+        UserHelper.saveCurrentUser(user, LoginActivity.this);
         UserHelper.setLoggedIn(true);
 
         // show welcome message
@@ -227,7 +227,7 @@ public class LoginActivity extends AppCompatActivity {
 //                                        object.getString("id"),
 //                                        object.getString("name"),
 //                                        new HashSet<Long>());
-//                                UserHelper.setCurrentUser(user, LoginActivity.this);
+//                                UserHelper.saveCurrentUser(user, LoginActivity.this);
 //                                UserHelper.setLoggedIn(true);
 //                            }catch (Exception e){
 //                                e.printStackTrace();

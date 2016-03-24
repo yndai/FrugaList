@@ -41,7 +41,8 @@ public interface FrugalistAPI {
      */
     @GET("deal/list")
     Call<FrugalistResponse.DealList> listDeals(
-            @Header("Authorization") String auth
+            @Header("Authorization") String auth,
+            @Query("ratingThreshold") Integer ratingThreshold
     );
 
     /**
@@ -57,7 +58,8 @@ public interface FrugalistAPI {
             @Header("Authorization") String auth,
             @Query("latitude") Float latitude,
             @Query("longitude") Float longitude,
-            @Query("radius") Integer radius
+            @Query("radius") Integer radius,
+            @Query("ratingThreshold") Integer ratingThreshold
     );
 
     /**
@@ -76,7 +78,8 @@ public interface FrugalistAPI {
             @Query("latitude") Float latitude,
             @Query("longitude") Float longitude,
             @Query("radius") Integer radius,
-            @Query("sortType") Integer sortType
+            @Query("sortType") Integer sortType,
+            @Query("ratingThreshold") Integer ratingThreshold
     );
 
     /**
@@ -95,7 +98,8 @@ public interface FrugalistAPI {
             @Query("latitude") Float latitude,
             @Query("longitude") Float longitude,
             @Query("radius") Integer radius,
-            @Query("sortType") Integer sortType
+            @Query("sortType") Integer sortType,
+            @Query("ratingThreshold") Integer ratingThreshold
     );
 
     /**

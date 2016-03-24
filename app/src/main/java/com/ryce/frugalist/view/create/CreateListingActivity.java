@@ -28,6 +28,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.model.LatLng;
 import com.ryce.frugalist.R;
+import com.ryce.frugalist.model.Settings;
 import com.ryce.frugalist.network.FrugalistRequest;
 import com.ryce.frugalist.network.FrugalistResponse;
 import com.ryce.frugalist.network.FrugalistServiceHelper;
@@ -443,6 +444,9 @@ public class CreateListingActivity extends AppCompatActivity {
             return null;
         }
 
+        // get quality setting
+        Settings settings = UserHelper.getUserSettings(this);
+
         // get reduced image
         Bitmap image = Utils.decodeSampledBitmapFromFile(oldImageFile.getAbsolutePath(), 720, 1280);
 
@@ -454,7 +458,7 @@ public class CreateListingActivity extends AppCompatActivity {
             FileOutputStream fos = new FileOutputStream(newImageFile);
 
             // store compressed bitmap in file
-            image.compress(Bitmap.CompressFormat.JPEG, 50, fos);
+            image.compress(Bitmap.CompressFormat.JPEG, settings.getUploadQuality(), fos);
 
             fos.close();
 

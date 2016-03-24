@@ -263,7 +263,7 @@ public class ListSectionRecyclerAdapter
         User user = new User(resUser);
 
         // update the current user model
-        UserHelper.setCurrentUser(user, mActivity);
+        UserHelper.saveCurrentUser(user, mActivity);
 
         // show notification for bookmark add/delete
         if (mListSection == ListSection.SAVED) {

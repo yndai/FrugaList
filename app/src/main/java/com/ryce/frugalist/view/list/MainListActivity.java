@@ -20,6 +20,7 @@ import com.facebook.FacebookSdk;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.util.LocationHelper;
 import com.ryce.frugalist.util.UserHelper;
+import com.ryce.frugalist.view.settings.SettingsActivity;
 import com.ryce.frugalist.view.create.CreateListingActivity;
 import com.ryce.frugalist.view.login.LoginActivity;
 import com.ryce.frugalist.view.search.SearchListingActivity;
@@ -144,7 +145,8 @@ public class MainListActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }
         if (id == R.id.searchMenu) {
             Intent intent = new Intent(this, SearchListingActivity.class);

@@ -371,7 +371,7 @@ public class ListingDetailActivity extends AppCompatActivity {
         User user = new User(resUser);
 
         // update the current user model
-        UserHelper.setCurrentUser(user, this);
+        UserHelper.saveCurrentUser(user, this);
 
         if (mBookmarked) {
             // now NOT bookmarked
