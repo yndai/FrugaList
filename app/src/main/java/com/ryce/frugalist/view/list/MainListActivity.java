@@ -1,10 +1,13 @@
 package com.ryce.frugalist.view.list;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -20,10 +23,10 @@ import com.facebook.FacebookSdk;
 import com.ryce.frugalist.R;
 import com.ryce.frugalist.util.LocationHelper;
 import com.ryce.frugalist.util.UserHelper;
-import com.ryce.frugalist.view.settings.SettingsActivity;
 import com.ryce.frugalist.view.create.CreateListingActivity;
 import com.ryce.frugalist.view.login.LoginActivity;
 import com.ryce.frugalist.view.search.SearchListingActivity;
+import com.ryce.frugalist.view.settings.SettingsActivity;
 
 public class MainListActivity extends AppCompatActivity {
 
@@ -145,24 +148,46 @@ public class MainListActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
-        }
-        if (id == R.id.searchMenu) {
+
+        } else if (id == R.id.action_search) {
+
             Intent intent = new Intent(this, SearchListingActivity.class);
             startActivity(intent);
-        }
-        if(id == R.id.action_logout){
-            UserHelper.userLogout(MainListActivity.this);
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
+
+        } else if (id == R.id.action_logout) {
+
+            // show confirm dialog for logout
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Are you sure you wish to log out?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            // do logout
+                            UserHelper.userLogout(MainListActivity.this);
+                            Intent intent = new Intent(MainListActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            dialog.cancel();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    })
+                    .show();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST) {
 
             // If request is cancelled, the result arrays are empty.

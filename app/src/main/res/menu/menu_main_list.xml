@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".view.list.MainListActivity">
     <item
-        android:id="@+id/searchMenu"
+        android:id="@+id/action_search"
         android:title="@string/action_search"
         android:icon="@android:drawable/ic_menu_search"
         app:showAsAction="collapseActionView|ifRoom"
@@ -17,5 +17,5 @@
         android:id="@+id/action_logout"
         android:orderInCategory="200"
         android:title="@string/action_logout"
-        />
+        app:showAsAction="never" />
 </menu>

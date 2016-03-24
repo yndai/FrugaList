@@ -3,7 +3,7 @@
     <string name="app_name">FrugaList</string>
 
     <string name="action_settings">Settings</string>
-    <string name="action_logout">Log Out</string>
+    <string name="action_logout">Log out</string>
     <string name="action_search">Search</string>
 
     <string name="title_activity_create_listing">Post a Deal</string>
@@ -31,7 +31,7 @@
     <string name="create_upload_load_msg">Please wait</string>
 
     <string-array name="unitArray">
-        <item>each</item>
+        <item>ea</item>
         <item>100g</item>
         <item>100mL</item>
         <item>lb</item>
