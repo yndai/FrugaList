@@ -134,8 +134,7 @@
         android:layout_below="@id/storeAddressText"
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
-        android:clickable="true">
-    </com.facebook.share.widget.ShareButton>
+        android:clickable="true" />
 
     <ImageView
         android:layout_width="25dp"

@@ -289,13 +289,18 @@ public class ListingDetailActivity extends AppCompatActivity {
         }
 
         // activates the fb share button
+        String contentDescription =
+                mDeal.getStore() + " @ " + mDeal.getAddress() + "\n" +
+                        mDeal.getProduct() + ": " + mDeal.getPrice() + "/" + mDeal.getUnit();
+        String imgurPage = mDeal.getImageUrl().substring(0,mDeal.getImageUrl().lastIndexOf("."));
+
         ShareLinkContent linkContent = new ShareLinkContent.Builder()
                 .setContentTitle("FrugaList - Share your favourite deals!")
-                .setContentDescription(
-                        "INSERT DESCRIPTION HERE")
+                .setContentDescription(Uri.decode(contentDescription))
                 .setImageUrl(Uri.parse(mDeal.getImageUrl()))
-                .setContentUrl(Uri.parse("https://fb.me/988753441208532"))
+                .setContentUrl(Uri.parse(imgurPage))
                 .build();
+
         mShareButton.setShareContent(linkContent); // enables the button
     }
 
