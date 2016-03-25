@@ -110,8 +110,9 @@ public class LocationHelper implements
      * Connect to Google API
      */
     public void connect() {
-        if (mGoogleApiClient != null && !mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
+            Log.i(TAG, "connect()");
         }
     }
 
@@ -119,8 +120,9 @@ public class LocationHelper implements
      * Disconnect from Google API
      */
     public void disconnect() {
-        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+        if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
+            Log.i(TAG, "disconnect()");
         }
     }
 

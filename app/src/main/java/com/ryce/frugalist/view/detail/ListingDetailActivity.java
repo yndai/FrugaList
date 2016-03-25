@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +62,7 @@ public class ListingDetailActivity extends AppCompatActivity {
     private Deal mDeal;
     private boolean mBookmarked;
 
+    RelativeLayout mDetailsLayout;
     ImageView mImageView;
     ImageView mBookmarkIconImg;
     ImageView mAuthorIconImg;
@@ -94,6 +96,7 @@ public class ListingDetailActivity extends AppCompatActivity {
         mProgressDialog.setMessage(getResources().getString(R.string.dialog_loading));
 
         // get views
+        mDetailsLayout = (RelativeLayout) findViewById(R.id.detailContentLayout);
         mBookmarkIconImg = (ImageView) findViewById(R.id.bookmarkImg);
         mAuthorIconImg = (ImageView) findViewById(R.id.authorImg);
         mImageView = (ImageView) findViewById(R.id.detailImage);
@@ -108,6 +111,9 @@ public class ListingDetailActivity extends AppCompatActivity {
         mDownButton = (ImageButton) findViewById(R.id.downButton);
         mBookmarkButton = (FloatingActionButton) findViewById(R.id.fabBookmark);
         mShareButton = (ShareButton) findViewById(R.id.fb_share_button);
+
+        // hide layout initially
+        mDetailsLayout.setVisibility(View.INVISIBLE);
 
         // get type of listing we are displaying
         mType = (ListingType) getIntent().getExtras().get(ARG_LISTING_TYPE);
@@ -302,6 +308,9 @@ public class ListingDetailActivity extends AppCompatActivity {
                 .build();
 
         mShareButton.setShareContent(linkContent); // enables the button
+
+        // unhide view
+        mDetailsLayout.setVisibility(View.VISIBLE);
     }
 
     /**********************************************************************

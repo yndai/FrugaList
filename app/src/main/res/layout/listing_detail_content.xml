@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:id="@+id/detailContentLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:facebook="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="visible">
@@ -34,7 +34,7 @@
         android:id="@+id/createdTitle"
         android:layout_below="@+id/priceText"
         android:layout_alignStart="@+id/priceText"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="10dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -44,7 +44,18 @@
         android:id="@+id/createdText"
         android:layout_alignBottom="@+id/createdTitle"
         android:layout_toEndOf="@+id/createdTitle"
-        android:layout_marginLeft="15dp" />
+        android:layout_marginLeft="6dp" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorAccent"
+        android:layout_below="@+id/createdTitle"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp" />
 
     <TextView
         android:layout_width="80dp"
@@ -59,17 +70,17 @@
         android:text="0" />
 
     <TextView
-        android:layout_width="340dp"
+        android:layout_width="260dp"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/storeNameText"
-        android:layout_below="@+id/createdTitle"
+        android:layout_below="@+id/divider"
         android:layout_alignStart="@+id/createdTitle"
         android:layout_marginTop="20dp"
         android:text="Store" />
 
     <TextView
-        android:layout_width="210dp"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/storeAddressText"
@@ -102,17 +113,16 @@
         android:padding="5dp" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:text="Show on Map"
         android:id="@+id/mapButton"
         android:textColor="#ffffff"
-        android:layout_alignTop="@+id/storeAddressText"
-        android:layout_toEndOf="@+id/storeAddressText"
-        android:layout_margin="10dp"
         android:backgroundTint="@color/colorAccent"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp" />
+        android:textSize="10dp"
+        android:layout_alignStart="@+id/fb_share_button"
+        android:layout_alignTop="@+id/storeAddressText"
+        android:layout_marginTop="10dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -123,18 +133,17 @@
         android:padding="8dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="390dp"
+        android:layout_marginTop="400dp"
         android:visibility="visible"
         android:backgroundTint="#b71c1c" />
 
     <com.facebook.share.widget.ShareButton
         android:id="@+id/fb_share_button"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/storeAddressText"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="5dp"
-        android:clickable="true" />
+        android:clickable="true"
+        android:layout_alignBottom="@+id/storeNameText"
+        android:layout_alignEnd="@+id/divider" />
 
     <ImageView
         android:layout_width="25dp"

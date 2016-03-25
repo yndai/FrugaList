@@ -117,16 +117,16 @@ public class SearchListingActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         // connect Google Location client
         LocationHelper.getInstance().connect();
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        // connect Google Location client
+    protected void onPause() {
+        super.onPause();
+        // disconnect Google Location client
         LocationHelper.getInstance().disconnect();
     }
 

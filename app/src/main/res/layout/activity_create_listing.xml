@@ -44,7 +44,7 @@
                     android:id="@+id/productInput"
                     style="@style/DefEditText"
                     android:hint="@string/create_product"
-                    android:inputType="text" />
+                    android:inputType="textCapSentences|text" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout

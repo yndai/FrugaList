@@ -116,8 +116,8 @@ public class MainListActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         // connect Google Location client if we have location permission, otherwise, wait for permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED) {
@@ -126,9 +126,9 @@ public class MainListActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        // connect Google Location client
+    protected void onPause() {
+        super.onPause();
+        // disconnect Google Location client
         LocationHelper.getInstance().disconnect();
     }
 
