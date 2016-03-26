@@ -169,6 +169,10 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
         }
     }
 
+    /**************************************************
+     * List fetch methods
+     **************************************************/
+
     /**
      * Fetch bookmarked deals
      */

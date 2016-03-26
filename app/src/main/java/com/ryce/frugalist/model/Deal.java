@@ -1,6 +1,8 @@
 package com.ryce.frugalist.model;
 
 import android.graphics.Color;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.ryce.frugalist.network.FrugalistResponse;
 
@@ -8,6 +10,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -128,6 +131,71 @@ public class Deal extends AbstractListing {
         }
 
         return dealList;
+    }
+
+    /****************************************
+     * Parcelable Implementation
+     ****************************************/
+
+    private Deal(Parcel in) {
+        super(in);
+        price = in.readString();
+        unit = in.readString();
+        store = in.readString();
+        rating = in.readInt();
+        description = in.readString();
+
+        // handle map
+        int mapSize = in.readInt();
+        if (mapSize != -1) {
+            votes = new HashMap<>();
+            for (int i = 0; i < mapSize; i++) {
+                String userId = in.readString();
+                Boolean vote = in.readInt() != 0;
+                votes.put(userId, vote);
+            }
+        }
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        super.writeToParcel(out, flags);
+
+        out.writeString(price);
+        out.writeString(unit);
+        out.writeString(store);
+        out.writeInt(rating);
+        out.writeString(description);
+
+        // write map in parts
+        if (votes != null) {
+            out.writeInt(votes.size());
+            for (Map.Entry<String, Boolean> vote : votes.entrySet()) {
+                out.writeString(vote.getKey());
+                // write int as there is no write boolean
+                out.writeInt(vote.getValue() ? 1 : 0);
+            }
+        } else {
+            // write -1 as size if map is null
+            out.writeInt(-1);
+        }
+    }
+
+    public static final Parcelable.Creator<Deal> CREATOR = new Parcelable.Creator<Deal>() {
+
+        public Deal createFromParcel(Parcel in) {
+            return new Deal(in);
+        }
+
+        public Deal[] newArray(int size) {
+            return new Deal[size];
+        }
+
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
 }

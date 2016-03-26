@@ -1,5 +1,8 @@
 package com.ryce.frugalist.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
 /**
@@ -7,7 +10,7 @@ import java.util.Date;
  *
  * Base class for a product listing
  */
-public abstract class AbstractListing {
+public abstract class AbstractListing implements Parcelable {
 
     private Long id;
     private String authorId;
@@ -16,8 +19,8 @@ public abstract class AbstractListing {
     private String imageUrl;
     private String thumbnailUrl;
     private String address;
-    private float longitude;
     private float latitude;
+    private float longitude;
 
     public AbstractListing(Long id, String authorId, Date created, String product, String address, float latitude, float longitude, String imageUrl) {
         this.id = id;
@@ -74,6 +77,35 @@ public abstract class AbstractListing {
 
     public String getThumbnailUrl() {
         return thumbnailUrl;
+    }
+
+    /****************************************
+     * Parcelable Implementation
+     ****************************************/
+
+    protected AbstractListing(Parcel in) {
+        id = in.readLong();
+        authorId = in.readString();
+        created = new Date(in.readLong());
+        product = in.readString();
+        imageUrl = in.readString();
+        thumbnailUrl = in.readString();
+        address = in.readString();
+        latitude = in.readFloat();
+        longitude = in.readFloat();
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeLong(id);
+        out.writeString(authorId);
+        out.writeLong(created.getTime());
+        out.writeString(product);
+        out.writeString(imageUrl);
+        out.writeString(thumbnailUrl);
+        out.writeString(address);
+        out.writeFloat(latitude);
+        out.writeFloat(longitude);
     }
 
 }

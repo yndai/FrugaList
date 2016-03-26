@@ -25,6 +25,7 @@ import com.ryce.frugalist.view.list.ListSectionPagerAdapter.ListSection;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -185,15 +186,31 @@ public class ListSectionRecyclerAdapter
      * Replace data in the list
      * @param list
      */
-    public void replaceData(List<AbstractListing> list){
+    public void replaceData(List<? extends AbstractListing> list){
         if (mItems != null) {
             mItems.clear();
             mItems.addAll(list);
         }
         else {
-            mItems = list;
+            mItems = new ArrayList<>(list);
         }
         notifyDataSetChanged();
+    }
+
+    /**
+     * Get parcelable array list of deals
+     * @return
+     */
+    public ArrayList<Deal> getParcelableDealArrayList() {
+        if (mItemType == ListingType.DEAL) {
+            ArrayList<Deal> deals = new ArrayList<>(mItems.size());
+            for (AbstractListing item : mItems) {
+                deals.add((Deal) item);
+            }
+            return deals;
+        } else {
+            return null;
+        }
     }
 
     /**
