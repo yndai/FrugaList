@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -128,6 +129,16 @@ public class SearchListingActivity extends AppCompatActivity
         super.onPause();
         // disconnect Google Location client
         LocationHelper.getInstance().disconnect();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            // when menu back button pressed, just finish()
+            onBackPressed();
+            return true;
+        }
+        return false;
     }
 
     @Override

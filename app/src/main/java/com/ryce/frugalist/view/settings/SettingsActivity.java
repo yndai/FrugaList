@@ -3,6 +3,7 @@ package com.ryce.frugalist.view.settings;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -110,6 +111,16 @@ public class SettingsActivity extends AppCompatActivity {
                 Log.i(TAG, "Commit quality " + quality.toString());
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            // when menu back button pressed, just finish()
+            onBackPressed();
+            return true;
+        }
+        return false;
     }
 
 }

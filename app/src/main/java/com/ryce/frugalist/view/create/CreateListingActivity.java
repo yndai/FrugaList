@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -216,6 +217,16 @@ public class CreateListingActivity extends AppCompatActivity {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            // when menu back button pressed, just finish()
+            onBackPressed();
+            return true;
+        }
+        return false;
     }
 
     @Override
