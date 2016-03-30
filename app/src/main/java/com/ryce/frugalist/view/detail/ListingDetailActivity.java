@@ -35,8 +35,8 @@ import com.ryce.frugalist.model.User;
 import com.ryce.frugalist.network.FrugalistResponse;
 import com.ryce.frugalist.network.FrugalistServiceHelper;
 import com.ryce.frugalist.util.UserHelper;
+import com.ryce.frugalist.view.ApplicationState;
 import com.ryce.frugalist.view.list.ListSectionFragment.ListingType;
-import com.ryce.frugalist.view.list.MainListActivity;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -54,6 +54,7 @@ public class ListingDetailActivity extends AppCompatActivity {
 
     public static final String ARG_LISTING_TYPE = "listing_type";
     public static final String ARG_LISTING_ID = "listing_id";
+    public static final String ARG_LISTING_INDEX = "listing_index";
 
     public static final int UP_VOTE_COLOR = Color.parseColor("#8bc34a");
     public static final int DOWN_VOTE_COLOR = Color.parseColor("#d32f2f");
@@ -245,10 +246,15 @@ public class ListingDetailActivity extends AppCompatActivity {
     private void refreshData(Deal deal) {
         mDeal = deal;
 
-        // Load image via URL
-        Picasso p = Picasso.with(this);
-        //p.setIndicatorsEnabled(true);
-        p.load(deal.getImageUrl()).into(mImageView);
+        // if image has changed, then reload
+        if (!deal.getImageUrl().equals(mImageView.getTag(R.id.tag_image_url))) {
+            // Load image via URL
+            Picasso p = Picasso.with(this);
+            //p.setIndicatorsEnabled(true);
+            p.load(deal.getImageUrl()).into(mImageView);
+            // store image url as a tag
+            mImageView.setTag(R.id.tag_image_url, deal.getImageUrl());
+        }
 
         // display data
         mProductText.setText(deal.getProduct());
@@ -457,9 +463,52 @@ public class ListingDetailActivity extends AppCompatActivity {
      * @param upvote
      */
     private void executeDealUpdateRating(boolean upvote) {
-        FrugalistServiceHelper.doUpdateDealRating(mFrugalistDealCallback,
+        FrugalistServiceHelper.doUpdateDealRating(mFrugalistDealUpdateCallback,
                 mDeal.getId(), UserHelper.getCurrentUser(this).getId(), upvote);
     }
+
+
+    /**
+     * Called once deal has been updated
+     * @param resDeal
+     */
+    private void onDealUpdateComplete(FrugalistResponse.Deal resDeal) {
+        Deal deal = new Deal(resDeal);
+        refreshData(deal);
+
+        // mark main list as stale
+        ((ApplicationState) getApplicationContext()).setMainListDataIsStale(true);
+    }
+
+    /** callback for Frugalist API deal fetch */
+    Callback<FrugalistResponse.Deal> mFrugalistDealUpdateCallback = new Callback<FrugalistResponse.Deal>() {
+        @Override
+        public void onResponse(Call<FrugalistResponse.Deal> call,
+                               Response<FrugalistResponse.Deal> response
+        ) {
+            if (response.isSuccess()) {
+
+                FrugalistResponse.Deal deal = response.body();
+                Log.i(TAG, deal.toString());
+                onDealUpdateComplete(deal);
+
+            } else {
+                try {
+                    Log.i(TAG, "Error: " + response.errorBody().string());
+                } catch (IOException e) {/* not handling */}
+            }
+            mProgressDialog.dismiss();
+        }
+
+        @Override
+        public void onFailure(Call<FrugalistResponse.Deal> call, Throwable t) {
+            Log.i(TAG, "Error: " + t.getMessage());
+            Snackbar.make(findViewById(android.R.id.content), "Failed! " + t.getMessage(), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            mProgressDialog.dismiss();
+        }
+
+    };
 
     /**********************************************************************
      * Deleting Deal
@@ -504,10 +553,11 @@ public class ListingDetailActivity extends AppCompatActivity {
         // show deleted message
         Toast.makeText(this, "Deal deleted", Toast.LENGTH_LONG).show();
 
+        // mark main list as stale
+        ((ApplicationState) getApplicationContext()).setMainListDataIsStale(true);
+
         // go back to main list
-        Intent intent = new Intent(this, MainListActivity.class);
-        startActivity(intent);
-        finish();
+        onBackPressed();
 
     }
 

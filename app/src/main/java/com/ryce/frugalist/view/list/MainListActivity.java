@@ -77,7 +77,7 @@ public class MainListActivity extends AppCompatActivity {
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setOffscreenPageLimit(mSectionsPagerAdapter.getCount() - 1);
+        //mViewPager.setOffscreenPageLimit(mSectionsPagerAdapter.getCount() - 1);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         // set up tabs widget with pager

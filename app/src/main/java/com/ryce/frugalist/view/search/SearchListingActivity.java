@@ -101,6 +101,7 @@ public class SearchListingActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if (verifySearchTermOk()) {
+                    mProgressDialog.show();
                     executeSearch();
                 }
             }

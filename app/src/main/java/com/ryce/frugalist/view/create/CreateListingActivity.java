@@ -38,6 +38,7 @@ import com.ryce.frugalist.network.ImgurResponse;
 import com.ryce.frugalist.network.ImgurServiceHelper;
 import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.util.Utils;
+import com.ryce.frugalist.view.ApplicationState;
 import com.ryce.frugalist.view.detail.ListingDetailActivity;
 import com.ryce.frugalist.view.list.ListSectionFragment;
 import com.squareup.picasso.Picasso;
@@ -66,6 +67,7 @@ public class CreateListingActivity extends AppCompatActivity {
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE_STORE = 9;
 
     ImageView mPhotoImageView;
+    TextView mImageSizeText;
     FloatingActionButton mUploadButton;
     ProgressDialog mProgressDialog;
 
@@ -89,6 +91,7 @@ public class CreateListingActivity extends AppCompatActivity {
 
         // get references to input widgets
         mPhotoImageView = (ImageView) findViewById(R.id.cameraView);
+        mImageSizeText = (TextView) findViewById(R.id.imageSizeText);
         mProductInput = (EditText) findViewById(R.id.productInput);
         mPriceInput = (EditText) findViewById(R.id.priceInput);
         mUnitSpinner = (Spinner) findViewById(R.id.unitSpinner);
@@ -113,6 +116,9 @@ public class CreateListingActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         mUnitSpinner.setAdapter(adapter);
+
+        // init image size text
+        mImageSizeText.setText("");
 
         // setup listener for camera button
         mPhotoImageView.setOnClickListener(new View.OnClickListener() {
@@ -179,6 +185,9 @@ public class CreateListingActivity extends AppCompatActivity {
 
                 // we want to scale down image file from camera
                 mImgFile = scaleDownImage(mImgFile);
+
+                // show file size
+                mImageSizeText.setText(mImgFile.length() / 1024 + " KB");
 
                 // load image into image view
                 Picasso.with(getBaseContext())
@@ -251,6 +260,9 @@ public class CreateListingActivity extends AppCompatActivity {
 
         // clean up temp files
         cleanupImageRequest();
+
+        // mark main list as stale
+        ((ApplicationState) getApplicationContext()).setMainListDataIsStale(true);
 
         // go to detail view of posted deal
         Intent intent = new Intent(this, ListingDetailActivity.class);

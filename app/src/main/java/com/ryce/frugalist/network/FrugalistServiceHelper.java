@@ -1,6 +1,9 @@
 package com.ryce.frugalist.network;
 
 import com.google.gson.GsonBuilder;
+import com.ryce.frugalist.util.Constants;
+
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -263,7 +266,12 @@ public class FrugalistServiceHelper {
                         );
 
         public static <S> S createService(Class<S> serviceClass) {
-            Retrofit retrofit = builder.client(httpClient.build()).build();
+            Retrofit retrofit = builder.client(
+                    httpClient
+                            .readTimeout(Constants.HTTP_TIMEOUT, TimeUnit.SECONDS)
+                            .connectTimeout(Constants.HTTP_TIMEOUT, TimeUnit.SECONDS)
+                            .build()
+            ).build();
             return retrofit.create(serviceClass);
         }
     }

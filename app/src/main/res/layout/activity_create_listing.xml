@@ -58,7 +58,7 @@
                     android:id="@+id/priceInput"
                     style="@style/DefEditText"
                     android:hint="@string/create_price"
-                    android:inputType="numberDecimal" />
+                    android:inputType="number" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -132,6 +132,16 @@
                     android:focusable="false" />
 
             </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/imageSizeText"
+                android:layout_alignBottom="@+id/cameraView"
+                android:layout_alignParentEnd="true"
+                android:background="#ffffff"
+                android:textColor="#000000" />
 
         </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>

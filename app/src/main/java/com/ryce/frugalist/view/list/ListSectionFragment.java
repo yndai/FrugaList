@@ -22,6 +22,7 @@ import com.ryce.frugalist.network.FrugalistServiceHelper;
 import com.ryce.frugalist.util.LocationHelper;
 import com.ryce.frugalist.util.UserHelper;
 import com.ryce.frugalist.util.Utils;
+import com.ryce.frugalist.view.ApplicationState;
 import com.ryce.frugalist.view.list.ListSectionPagerAdapter.ListSection;
 
 import java.io.IOException;
@@ -169,6 +170,28 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // if list data is stale on return, refresh
+        if (((ApplicationState) getActivity().getApplicationContext())
+                        .isMainListDataIsStale()) {
+
+            // refresh list data
+            if (mListSection == ListSection.NEARBY) {
+                mProgressDialog.show();
+                executeFetchDealList();
+            } else if (mListSection == ListSection.POSTED) {
+                mProgressDialog.show();
+                executeFetchPostedDeals();
+            } else if (mListSection == ListSection.SAVED) {
+                mProgressDialog.show();
+                executeFetchBookmarks();
+            }
+        }
+    }
+
     /**************************************************
      * List fetch methods
      **************************************************/
@@ -222,6 +245,9 @@ public class ListSectionFragment extends Fragment implements LocationHelper.Loca
 
         // replace data in recycler view
         mListAdapter.replaceData(newDealList);
+
+        // set list data as not stale
+        ((ApplicationState) getActivity().getApplicationContext()).setMainListDataIsStale(false);
     }
 
     /** callback for deal list */

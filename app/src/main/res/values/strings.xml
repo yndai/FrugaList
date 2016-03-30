@@ -21,6 +21,8 @@
 
     <string name="search_hint">Search by product or store</string>
 
+    <item type="id" name="tag_image_url"/>
+
     <string name="create_product">Product</string>
     <string name="create_store">Store</string>
     <string name="create_price">Price</string>

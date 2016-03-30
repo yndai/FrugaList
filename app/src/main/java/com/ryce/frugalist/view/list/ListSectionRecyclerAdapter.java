@@ -43,14 +43,14 @@ public class ListSectionRecyclerAdapter
     private static final String TAG = ListSectionRecyclerAdapter.class.getSimpleName();
 
     private final Activity mActivity;
-    private List<AbstractListing> mItems;
+    private List<? extends AbstractListing> mItems;
     private final ListingType mItemType;
     private final ListSection mListSection;
 
     public ListSectionRecyclerAdapter(Activity activity,
             List<AbstractListing> items, ListingType itemType, ListSection listSection) {
         mActivity = activity;
-        mItems = items;
+        mItems = items == null ? new ArrayList<AbstractListing>() : items;
         mItemType = itemType;
         mListSection = listSection;
     }
@@ -186,13 +186,11 @@ public class ListSectionRecyclerAdapter
      * Replace data in the list
      * @param list
      */
-    public void replaceData(List<? extends AbstractListing> list){
-        if (mItems != null) {
-            mItems.clear();
-            mItems.addAll(list);
-        }
-        else {
-            mItems = new ArrayList<>(list);
+    public void replaceData(List<? extends AbstractListing> list) {
+        if (list != null) {
+            mItems = list;
+        } else {
+            mItems = new ArrayList<>();
         }
         notifyDataSetChanged();
     }

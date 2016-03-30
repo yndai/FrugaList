@@ -9,6 +9,9 @@ public class Constants {
     private Constants() {
     }
 
+    /** timeout for http requests in seconds */
+    public static final int HTTP_TIMEOUT = 30;
+
     // test coordinates (Waterloo)
     public static final double DEFAULT_LATITUDE = 43.466667;
     public static final double DEFaULT_LONGITUDE = -80.516667;

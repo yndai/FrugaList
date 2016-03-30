@@ -2,7 +2,10 @@ package com.ryce.frugalist.network;
 
 import android.content.Context;
 
+import com.ryce.frugalist.util.Constants;
 import com.ryce.frugalist.util.Utils;
+
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -82,7 +85,12 @@ public class ImgurServiceHelper {
                         .addConverterFactory(GsonConverterFactory.create());
 
         public static <S> S createService(Class<S> serviceClass) {
-            Retrofit retrofit = builder.client(httpClient.build()).build();
+            Retrofit retrofit = builder.client(
+                    httpClient
+                            .readTimeout(Constants.HTTP_TIMEOUT, TimeUnit.SECONDS)
+                            .connectTimeout(Constants.HTTP_TIMEOUT, TimeUnit.SECONDS)
+                            .build()
+            ).build();
             return retrofit.create(serviceClass);
         }
     }
