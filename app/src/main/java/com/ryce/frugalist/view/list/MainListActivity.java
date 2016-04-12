@@ -171,6 +171,7 @@ public class MainListActivity extends AppCompatActivity {
                             Intent intent = new Intent(MainListActivity.this, LoginActivity.class);
                             startActivity(intent);
                             dialog.cancel();
+                            finish();
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
